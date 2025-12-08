@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Talleres - Arteterapia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6 fw-light">Talleres</h1>
+        <button class="btn btn-primary btn-create-workshop" data-bs-toggle="modal"
+            data-bs-target="#createWorkshopModal">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+
+    {% if workshops %}
+    <div class="row g-4">
+        {% for workshop in workshops %}
+        <div class="col-md-6 col-lg-4">
+            <div class="workshop-card"
+                onclick="window.location.href='{{ url_for('workshop_bp.detail', workshop_id=workshop.id) }}'">
+                <div class="workshop-card-body">
+                    <h5 class="workshop-card-title">{{ workshop.name }}</h5>
+                    <div class="workshop-card-stats">
+                        <span class="badge bg-light text-dark">
+                            <i class="bi bi-people"></i> {{ workshop.participant_count }} participantes
+                        </span>
+                        <span class="badge bg-light text-dark">
+                            <i class="bi bi-calendar-event"></i> {{ workshop.session_count }} sesiones
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <p class="lead text-muted mt-3">No hay talleres creados aún</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createWorkshopModal">
+            Crear primer taller
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Create Workshop Modal -->
+<div class="modal fade" id="createWorkshopModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Nuevo Taller</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('workshop_bp.create_workshop') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="workshopName" class="form-label">Nombre del taller</label>
+                        <input type="text" class="form-control" id="workshopName" name="name" required autofocus>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

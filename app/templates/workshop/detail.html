@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}{{ workshop.name }} - Arteterapia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ url_for('workshop_bp.list_workshops') }}"
+                class="text-muted text-decoration-none mb-2 d-inline-block">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <h1 class="display-6 fw-light mb-0">{{ workshop.name }}</h1>
+        </div>
+        <div>
+            {% if has_observations %}
+            <a href="{{ url_for('observation_bp.view_observations', workshop_id=workshop.id) }}"
+                class="btn btn-outline-primary me-2">
+                <i class="bi bi-table"></i> Ver registros
+            </a>
+            {% endif %}
+            <form method="POST" action="{{ url_for('workshop_bp.delete_workshop', workshop_id=workshop.id) }}"
+                class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar este taller y todos sus datos?')">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Objective Section -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-muted mb-3">Objetivo</h5>
+            <div id="objectiveDisplay" class="objective-display" onclick="editObjective()">
+                {% if workshop.objective %}
+                <p class="mb-0">{{ workshop.objective }}</p>
+                {% else %}
+                <p class="text-muted fst-italic mb-0">Haga clic para agregar un objetivo...</p>
+                {% endif %}
+            </div>
+            <div id="objectiveEdit" class="objective-edit d-none">
+                <textarea class="form-control" id="objectiveText" rows="3">{{ workshop.objective or '' }}</textarea>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-primary" onclick="saveObjective()">Guardar</button>
+                    <button class="btn btn-sm btn-secondary" onclick="cancelEditObjective()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Participants Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-muted mb-0">
+                            Participantes <span class="badge bg-secondary" id="participantCount">{{ participants|length
+                                }}</span>
+                        </h5>
+                        <button class="btn btn-sm btn-primary" onclick="showAddParticipant()">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Add Participant Form -->
+                    <div id="addParticipantForm" class="mb-3 d-none">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="newParticipantName"
+                                placeholder="Nombre del participante">
+                            <button class="btn btn-primary" onclick="createParticipant()">Agregar</button>
+                            <button class="btn btn-secondary" onclick="cancelAddParticipant()">Cancelar</button>
+                        </div>
+                    </div>
+
+                    <!-- Participants List -->
+                    <ul class="list-group list-group-flush" id="participantsList">
+                        {% for participant in participants %}
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center"
+                            data-participant-id="{{ participant.id }}">
+                            <span class="participant-name">{{ participant.name }}</span>
+                            <div>
+                                <button class="btn btn-sm btn-link text-muted"
+                                    onclick="editParticipant({{ participant.id }}, '{{ participant.name }}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-link text-danger"
+                                    onclick="deleteParticipant({{ participant.id }})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item px-0 text-muted fst-italic">No hay participantes</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-muted mb-0">
+                            Sesiones <span class="badge bg-secondary" id="sessionCount">{{ sessions|length }}</span>
+                        </h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#createSessionModal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Sessions List -->
+                    <div id="sessionsList">
+                        {% for session in sessions %}
+                        <div class="session-card mb-3" data-session-id="{{ session.id }}">
+                            <div class="session-card-header" onclick="toggleSession({{ session.id }})">
+                                <h6 class="mb-0">{{ session.prompt[:50] }}{% if session.prompt|length > 50 %}...{% endif
+                                    %}</h6>
+                                <i class="bi bi-chevron-down session-toggle-icon"></i>
+                            </div>
+                            <div class="session-card-body collapse" id="session{{ session.id }}">
+                                <p class="mb-2"><strong>Consigna:</strong> {{ session.prompt }}</p>
+                                {% if session.motivation %}
+                                <p class="mb-2"><strong>Motivación:</strong> {{ session.motivation }}</p>
+                                {% endif %}
+                                {% if session.materials %}
+                                <p class="mb-2"><strong>Materiales:</strong> {{ session.materials|join(', ') }}</p>
+                                {% endif %}
+                                <p class="mb-3"><small class="text-muted">{{ session.observation_count }}
+                                        registro(s)</small></p>
+
+                                <!-- Observation buttons for each participant -->
+                                {% if participants %}
+                                <div class="d-flex gap-2 flex-wrap mb-2">
+                                    {% for participant in participants %}
+                                    <a href="{{ url_for('observation_bp.start_observation', session_id=session.id, participant_id=participant.id) }}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-clipboard-check"></i> {{ participant.name }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-link text-muted"
+                                        onclick="editSession({{ session.id }})">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger"
+                                        onclick="deleteSession({{ session.id }})">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="text-muted fst-italic">No hay sesiones creadas</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Session Modal -->
+<div class="modal fade" id="createSessionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Nueva Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="sessionPrompt" class="form-label">Consigna *</label>
+                    <textarea class="form-control" id="sessionPrompt" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="sessionMotivation" class="form-label">Motivación</label>
+                    <textarea class="form-control" id="sessionMotivation" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="sessionMaterials" class="form-label">Materiales (separados por comas)</label>
+                    <input type="text" class="form-control" id="sessionMaterials"
+                        placeholder="Ej: lápices, papel, témperas">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createSession()">Crear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Session Modal -->
+<div class="modal fade" id="editSessionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Editar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editSessionId">
+                <div class="mb-3">
+                    <label for="editSessionPrompt" class="form-label">Consigna *</label>
+                    <textarea class="form-control" id="editSessionPrompt" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="editSessionMotivation" class="form-label">Motivación</label>
+                    <textarea class="form-control" id="editSessionMotivation" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="editSessionMaterials" class="form-label">Materiales (separados por comas)</label>
+                    <input type="text" class="form-control" id="editSessionMaterials">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="updateSession()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const workshopId = {{ workshop.id }};
+</script>
+{% endblock %}
