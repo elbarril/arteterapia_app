@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Cuenta - Arteterapia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                        Crear Cuenta
+                    </h3>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Has sido invitado a unirte a Arteterapia
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth_bp.register', token=invitation.token) }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="{{ invitation.email }}" readonly>
+                            <small class="form-text text-muted">
+                                Este correo fue invitado por un administrador
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nombre de Usuario</label>
+                            <input type="text" class="form-control" id="username" name="username" required autofocus
+                                minlength="3" maxlength="80">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="password" name="password" required
+                                minlength="8">
+                            <small class="form-text text-muted">
+                                Mínimo 8 caracteres, debe incluir letras y números
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password_confirm" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="password_confirm" name="password_confirm"
+                                required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Crear Cuenta</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('auth_bp.login') }}" class="text-muted small">
+                            ¿Ya tienes cuenta? Iniciar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
