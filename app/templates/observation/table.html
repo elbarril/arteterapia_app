@@ -21,6 +21,7 @@
                     <th>Fecha</th>
                     <th>Participante</th>
                     <th>Sesión</th>
+                    <th>Versión</th>
                     <th>Respuestas</th>
                     <th>Notas</th>
                     <th>Acciones</th>
@@ -32,6 +33,9 @@
                     <td>{{ obs.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                     <td>{{ obs.participant.name }}</td>
                     <td>{{ obs.session.prompt[:40] }}{% if obs.session.prompt|length > 40 %}...{% endif %}</td>
+                    <td>
+                        <span class="badge bg-secondary">v{{ obs.version }}</span>
+                    </td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
                             data-bs-target="#answers{{ obs.id }}">

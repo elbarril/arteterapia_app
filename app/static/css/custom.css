@@ -178,6 +178,24 @@ body {
     box-shadow: 0 4px 12px var(--accent-shadow);
 }
 
+/* Observation buttons - completed vs pending */
+.observation-btn.btn-success {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.observation-btn.btn-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+    color: white;
+}
+
+.observation-btn .badge {
+    font-size: 0.7rem;
+}
+
+/* Answer buttons */
 .answer-btn {
     border: 2px solid var(--border-light);
     transition: all 0.2s ease;
@@ -193,6 +211,25 @@ body {
 
 .answer-btn:active {
     transform: scale(0.98);
+}
+
+/* Previously answered questions - subtle highlight */
+.answer-btn.previously-answered {
+    border-color: #fbbf24;
+    background-color: #fef3c7;
+    color: #92400e;
+    position: relative;
+}
+
+.answer-btn.previously-answered::before {
+    content: "✓ ";
+    font-weight: bold;
+}
+
+.answer-btn.previously-answered:hover {
+    border-color: #f59e0b;
+    background-color: #fbbf24;
+    color: white;
 }
 
 /* Progress bar */

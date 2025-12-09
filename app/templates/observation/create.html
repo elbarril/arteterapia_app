@@ -13,6 +13,11 @@
                     <i class="bi bi-arrow-left"></i> Cancelar
                 </a>
                 <h5 class="text-muted mb-2">{{ participant.name }}</h5>
+                {% if is_redo %}
+                <span class="badge bg-info mb-2">
+                    <i class="bi bi-arrow-clockwise"></i> Editando observación
+                </span>
+                {% endif %}
                 <p class="text-muted small">{{ session.prompt[:60] }}{% if session.prompt|length > 60 %}...{% endif %}
                 </p>
                 <div class="progress" style="height: 4px;">
@@ -74,6 +79,22 @@
     let currentQuestionId = "{{ question.id }}";
     let currentIndex = {{ question_index }};
     const totalQuestions = {{ total_questions }};
+    const previousAnswers = {{ previous_answers| tojson | safe }};
+    const isRedo = {{ 'true' if is_redo else 'false' }};
+
+    // Highlight the current answer if it was previously answered
+    function highlightPreviousAnswer() {
+        const previousAnswer = previousAnswers[currentQuestionId];
+        if (previousAnswer) {
+            const answerBtn = document.getElementById('answer_' + previousAnswer);
+            if (answerBtn) {
+                answerBtn.classList.add('previously-answered');
+            }
+        }
+    }
+
+    // Call on page load
+    document.addEventListener('DOMContentLoaded', highlightPreviousAnswer);
 
     function submitAnswer(answer) {
         // Disable buttons during submission
@@ -112,8 +133,14 @@
                         const progress = ((currentIndex + 1) / totalQuestions * 100);
                         document.getElementById('observationProgress').style.width = progress + '%';
 
-                        // Re-enable buttons
-                        buttons.forEach(btn => btn.disabled = false);
+                        // Remove previous highlighting
+                        buttons.forEach(btn => {
+                            btn.classList.remove('previously-answered');
+                            btn.disabled = false;
+                        });
+
+                        // Highlight if this question was previously answered
+                        highlightPreviousAnswer();
                     } else {
                         // Show notes card
                         document.getElementById('questionCard').classList.add('d-none');

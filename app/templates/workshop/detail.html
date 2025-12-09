@@ -138,9 +138,20 @@
                                 {% if participants %}
                                 <div class="d-flex gap-2 flex-wrap mb-2">
                                     {% for participant in participants %}
+                                    {% set has_obs = session.has_observation_for(participant.id) %}
+                                    {% set obs_count = session.get_observation_count_for(participant.id) %}
                                     <a href="{{ url_for('observation_bp.start_observation', session_id=session.id, participant_id=participant.id) }}"
-                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-clipboard-check"></i> {{ participant.name }}
+                                        class="btn btn-sm {% if has_obs %}btn-success{% else %}btn-outline-primary{% endif %} observation-btn"
+                                        data-has-observation="{{ 'true' if has_obs else 'false' }}">
+                                        {% if has_obs %}
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        {% else %}
+                                        <i class="bi bi-clipboard-check"></i>
+                                        {% endif %}
+                                        {{ participant.name }}
+                                        {% if obs_count > 1 %}
+                                        <span class="badge bg-light text-dark ms-1">v{{ obs_count }}</span>
+                                        {% endif %}
                                     </a>
                                     {% endfor %}
                                 </div>

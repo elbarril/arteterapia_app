@@ -16,7 +16,7 @@ function cancelEditObjective() {
 function saveObjective() {
     const objective = document.getElementById('objectiveText').value;
 
-    fetch(`/workshop/${workshopId}/update-objective`, {
+    fetch(`/workshop/${workshopId}/objective`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
