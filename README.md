@@ -30,7 +30,7 @@ A complete Flask-based web application for art therapists to manage workshops, s
 - Python 3.8 or higher
 - pip (Python package manager)
 
-### Setup Steps
+### Quick Start
 
 1. **Clone or download the repository**
 
@@ -54,12 +54,23 @@ A complete Flask-based web application for art therapists to manage workshops, s
    pip install -r requirements.txt
    ```
 
-5. **Initialize the database**:
+5. **Setup the database**:
+   
+   **Option A: With sample data (recommended for testing)**
    ```bash
-   flask --app run db init
-   flask --app run db migrate -m "Initial migration"
-   flask --app run db upgrade
+   python setup_db.py --with-data
    ```
+   
+   **Option B: Admin user only (for production)**
+   ```bash
+   python setup_db.py
+   ```
+   
+   This will:
+   - Create all database tables
+   - Set up admin and editor roles
+   - Create admin user (username: `admin`, password: `admin123`)
+   - Optionally populate with realistic sample data
 
 6. **Run the application**:
    ```bash
@@ -69,6 +80,162 @@ A complete Flask-based web application for art therapists to manage workshops, s
 7. **Access the application**:
    - Main application: http://localhost:5000
    - Admin interface: http://localhost:5000/admin
+   - Login with: `admin` / `admin123` (change password on first login!)
+
+### Database Setup Options
+
+See `DATABASE_SETUP.md` for detailed documentation on:
+- Resetting the database
+- Sample data details
+- Troubleshooting
+- Advanced options
+
+**Quick Reference:**
+```bash
+# Setup with sample data
+python setup_db.py --with-data
+
+# Reset database with sample data
+python setup_db.py --reset --with-data
+
+# Reset database (admin only)
+python setup_db.py --reset
+```
+
+⚠️ **Important:** Stop the Flask application (`Ctrl+C`) before running `--reset` commands!
+
+## Environment Configuration
+
+### Setting Up Environment Variables
+
+1. **Copy the example environment file**:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure required variables** in `.env`:
+
+   ```bash
+   # Flask Configuration
+   SECRET_KEY=your-secret-key-here  # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+   FLASK_ENV=development
+   
+   # Database (SQLite by default, can use PostgreSQL/MySQL)
+   DATABASE_URL=sqlite:///arteterapia.db
+   
+   # Email Configuration (for user invitations and password resets)
+   MAIL_SERVER=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USE_TLS=True
+   MAIL_USERNAME=your-email@gmail.com
+   MAIL_PASSWORD=your-app-password
+   MAIL_DEFAULT_SENDER=your-email@gmail.com
+   
+   # Admin Configuration
+   ADMIN_EMAIL=admin@example.com
+   ```
+
+3. **Email Setup Notes**:
+   - For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password
+   - In development, emails are printed to console if `FLASK_ENV=development`
+   - For production, configure a proper SMTP server
+
+## Authentication System
+
+### User Roles and Permissions
+
+The application uses role-based access control with two roles:
+
+- **Admin**: Full access to application, can create invitations, access Flask-Admin panel
+- **Editor**: Can manage workshops, participants, sessions, and observations
+
+### User Registration Flow
+
+**Invitation-Based Registration** (Admin only):
+
+1. Admin logs in and navigates to create invitation endpoint
+2. Admin generates invitation link with email
+3. New user receives email with registration link
+4. User registers with the invitation token
+5. User verifies email (link sent automatically)
+6. User can now log in and access the application
+
+**Manual Invitation Creation**:
+```bash
+# Visit the create invitation endpoint (admin only)
+http://localhost:5000/auth/create-invitation
+```
+
+### Login and Password Management
+
+**First Login**:
+```
+URL: http://localhost:5000/auth/login
+Default Admin: admin / admin123
+```
+
+⚠️ **Change the default admin password immediately after first login!**
+
+**Password Reset Flow**:
+1. Click "Forgot Password" on login page
+2. Enter registered email address
+3. Receive password reset link via email
+4. Click link and set new password
+5. Log in with new credentials
+
+**Changing Password** (when logged in):
+- Navigate to: http://localhost:5000/auth/change-password
+- Enter current password and new password
+- Confirm changes
+
+### Protected Routes
+
+All workshop, participant, session, and observation routes require authentication:
+- Users must be logged in to access any CRUD operations
+- Admin routes (`/admin/*`) require admin role
+- Unauthenticated users are redirected to login page
+
+## Security Considerations
+
+### Best Practices
+
+1. **Secret Key**: Always generate a strong, random secret key for production
+   ```bash
+   python -c "import secrets; print(secrets.token_hex(32))"
+   ```
+
+2. **Password Policy**:
+   - Minimum 6 characters (configurable in code)
+   - Passwords are hashed using Werkzeug's security utilities
+   - Never store plain-text passwords
+
+3. **Email Verification**: Users must verify their email before accessing the application
+
+4. **Token Expiration**:
+   - Password reset tokens expire after 1 hour
+   - Email verification tokens expire after 24 hours
+
+5. **Environment Variables**: Never commit `.env` file to version control (already in `.gitignore`)
+
+6. **Database Security**:
+   - Use environment variables for database credentials
+   - For production, use PostgreSQL or MySQL instead of SQLite
+   - Regular backups recommended
+
+7. **HTTPS in Production**: Always use HTTPS for production deployments to protect user credentials
+
+### Production Deployment Checklist
+
+- [ ] Generate new `SECRET_KEY`
+- [ ] Change default admin password
+- [ ] Configure production database (PostgreSQL/MySQL)
+- [ ] Set up proper email server (not Gmail)
+- [ ] Enable HTTPS/SSL
+- [ ] Set `FLASK_ENV=production`
+- [ ] Configure firewall and security groups
+- [ ] Set up regular database backups
+- [ ] Review and restrict admin access
+
 
 ## Project Structure
 
