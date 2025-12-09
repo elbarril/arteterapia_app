@@ -1,14 +1,23 @@
 # .gitignore for Flask Application
 
+# ===========================
 # Python
+# ===========================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual Environments
 env/
 venv/
+.venv/
 ENV/
+env.bak/
+venv.bak/
+
+# Distribution / Packaging
 build/
 develop-eggs/
 dist/
@@ -21,47 +30,155 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
+# PyInstaller
+*.manifest
+*.spec
+
+# ===========================
 # Flask
+# ===========================
 instance/
 .webassets-cache
+.flask_session/
 
+# ===========================
 # Database
+# ===========================
 *.db
 *.sqlite
 *.sqlite3
+*.db-shm
+*.db-wal
 arteterapia.db
 
-# IDE
+# ===========================
+# Environment Variables
+# ===========================
+.env
+.env.local
+.env.*.local
+.flaskenv
+
+# ===========================
+# IDE & Editors
+# ===========================
+# VSCode
 .vscode/
+*.code-workspace
+
+# PyCharm
 .idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
 *~
+.netrwhist
 
-# Environment variables
-.env
-.flaskenv
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
 
-# OS
+# ===========================
+# OS Specific
+# ===========================
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
 
+# Linux
+*~
+
+# ===========================
 # Logs
+# ===========================
 *.log
+logs/
+*.log.*
 
-# Translations (generated)
+# ===========================
+# Testing & Coverage
+# ===========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# ===========================
+# Translations (compiled)
+# ===========================
 *.mo
 *.pot
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# ===========================
+# Jupyter Notebook
+# ===========================
+.ipynb_checkpoints
+*.ipynb
 
-# Migrations (keep the migrations folder structure but ignore version files during development)
-# Uncomment if you want to version control migrations:
-# migrations/versions/
+# ===========================
+# Migrations
+# ===========================
+# Uncomment if you want to ignore migration version files:
+# migrations/versions/*.py
+# migrations/versions/*.pyc
+
+# ===========================
+# Static Files (if using webpack/npm)
+# ===========================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ===========================
+# Backup Files
+# ===========================
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# ===========================
+# Security & Secrets
+# ===========================
+*.pem
+*.key
+*.cert
+secrets/
+credentials/
