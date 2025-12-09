@@ -1,6 +1,7 @@
 """Observation controller."""
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session as flask_session
 from flask_babel import gettext as _
+from flask_login import login_required
 from app import db
 from app.models.session import Session
 from app.models.participant import Participant
@@ -14,6 +15,7 @@ observation_bp = Blueprint('observation_bp', __name__)
 
 
 @observation_bp.route('/session/<int:session_id>/observe/<int:participant_id>')
+@login_required
 def start_observation(session_id, participant_id):
     """Start the observational record flow."""
     session_obj = Session.query.get_or_404(session_id)
@@ -23,12 +25,24 @@ def start_observation(session_id, participant_id):
     if participant.workshop_id != session_obj.workshop_id:
         return redirect(url_for('workshop_bp.detail', workshop_id=session_obj.workshop_id))
     
+    # Check for existing observations and get the latest one
+    latest_observation = ObservationalRecord.query.filter_by(
+        session_id=session_id,
+        participant_id=participant_id
+    ).order_by(ObservationalRecord.version.desc()).first()
+    
+    # Pre-fill answers from latest observation if it exists
+    previous_answers = latest_observation.answers if latest_observation else {}
+    is_redo = latest_observation is not None
+    
     # Initialize session data
     flask_session['observation_data'] = {
         'session_id': session_id,
         'participant_id': participant_id,
-        'answers': {},
-        'current_index': 0
+        'answers': previous_answers.copy(),  # Start with previous answers
+        'current_index': 0,
+        'is_redo': is_redo,
+        'previous_version': latest_observation.version if latest_observation else 0
     }
     
     # Get first question
@@ -41,11 +55,14 @@ def start_observation(session_id, participant_id):
         question=first_question,
         question_index=0,
         total_questions=get_total_question_count(),
-        answer_options=ANSWER_OPTIONS
+        answer_options=ANSWER_OPTIONS,
+        is_redo=is_redo,
+        previous_answers=previous_answers
     )
 
 
 @observation_bp.route('/observation/answer', methods=['POST'])
+@login_required
 def process_answer():
     """Process an answer and move to the next question (AJAX)."""
     data = request.get_json()
@@ -90,6 +107,7 @@ def process_answer():
 
 
 @observation_bp.route('/observation/complete', methods=['POST'])
+@login_required
 def complete_observation():
     """Save the completed observation with optional freeform notes."""
     if 'observation_data' not in flask_session:
@@ -100,12 +118,16 @@ def complete_observation():
     
     obs_data = flask_session['observation_data']
     
-    # Create observational record
+    # Calculate the next version number
+    next_version = obs_data.get('previous_version', 0) + 1
+    
+    # Create observational record with version
     record = ObservationalRecord(
         session_id=obs_data['session_id'],
         participant_id=obs_data['participant_id'],
         answers=obs_data['answers'],
-        freeform_notes=freeform_notes if freeform_notes else None
+        freeform_notes=freeform_notes if freeform_notes else None,
+        version=next_version
     )
     db.session.add(record)
     db.session.commit()
@@ -124,6 +146,7 @@ def complete_observation():
 
 
 @observation_bp.route('/workshop/<int:workshop_id>/observations')
+@login_required
 def view_observations(workshop_id):
     """Display consolidated observation table for a workshop."""
     from app.models.workshop import Workshop

@@ -13,6 +13,9 @@ class Workshop(db.Model):
     objective = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
+    # Foreign key to user (owner of the workshop)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    
     # Relationships with cascade delete
     participants = db.relationship(
         'Participant',

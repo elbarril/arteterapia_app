@@ -1,6 +1,7 @@
 """Participant controller."""
 from flask import Blueprint, request, jsonify
 from flask_babel import gettext as _
+from flask_login import login_required
 from app import db
 from app.models.participant import Participant
 from app.models.workshop import Workshop
@@ -9,6 +10,7 @@ participant_bp = Blueprint('participant_bp', __name__)
 
 
 @participant_bp.route('/workshop/<int:workshop_id>/participant/create', methods=['POST'])
+@login_required
 def create_participant(workshop_id):
     """Create a new participant for a workshop (AJAX)."""
     workshop = Workshop.query.get_or_404(workshop_id)
@@ -38,6 +40,7 @@ def create_participant(workshop_id):
 
 
 @participant_bp.route('/participant/<int:participant_id>/update', methods=['PUT', 'POST'])
+@login_required
 def update_participant(participant_id):
     """Update a participant (AJAX)."""
     participant = Participant.query.get_or_404(participant_id)
@@ -65,6 +68,7 @@ def update_participant(participant_id):
 
 
 @participant_bp.route('/participant/<int:participant_id>/delete', methods=['DELETE', 'POST'])
+@login_required
 def delete_participant(participant_id):
     """Delete a participant (AJAX)."""
     participant = Participant.query.get_or_404(participant_id)

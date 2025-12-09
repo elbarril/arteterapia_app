@@ -33,5 +33,13 @@ class Session(db.Model):
         """Return the count of observations for this session."""
         return self.observations.count()
     
+    def has_observation_for(self, participant_id):
+        """Check if this session has an observation for a specific participant."""
+        return self.observations.filter_by(participant_id=participant_id).first() is not None
+    
+    def get_observation_count_for(self, participant_id):
+        """Get the number of observation versions for a specific participant."""
+        return self.observations.filter_by(participant_id=participant_id).count()
+    
     def __repr__(self):
         return f'<Session {self.id} - {self.prompt[:30]}>'
