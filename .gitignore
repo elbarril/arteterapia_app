@@ -72,6 +72,8 @@ arteterapia.db
 # VSCode
 .vscode/
 *.code-workspace
+.aicontext
+
 
 # PyCharm
 .idea/
