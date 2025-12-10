@@ -180,7 +180,14 @@ arteterapia_app/
 ### Git Workflow
 - **Branch Naming**: Descriptive names like `feature/invitation-system` or `fix/language-switcher`
 - **Commits**: Granular, descriptive commits for each logical change
+- **Branch Strategy**: **ALWAYS** create a new branch for changes. **NEVER** commit directly to `master`.
 - **Never Commit**: `.env`, `*.db`, `__pycache__`, `.venv`
+
+### Command Execution (CRITICAL)
+- **Virtual Environment**: ALWAYS active the virtual environment or access binaries directly from `.venv` before running Python commands.
+  - **Windows Powershell**: `.\.venv\Scripts\Activate.ps1; python script.py` OR `.\.venv\Scripts\python.exe script.py`
+  - **Git Bash/Unix**: `source .venv/bin/activate && python script.py` OR `.venv/bin/python script.py`
+- **Dependency Management**: Ensure all new dependencies are installed in the venv and added to `requirements.txt`.
 
 ### Error Handling
 - Always wrap database operations in try-except blocks
@@ -434,6 +441,7 @@ fetch('/workshop/1/update-objective', {
 - **Responsive breakpoints**: `col-md-6`, `col-lg-4`
 - **Components**: Cards, modals, badges, alerts, list groups
 - **Icons**: Currently using text symbols (`+`, `▼`), can integrate Bootstrap Icons if needed
+- **Modals vs Native Alerts**: **NEVER** use native `alert()`, `confirm()`, or `prompt()`. Use the `showModal` helper (in `app.js`) with Bootstrap modals for all user interactions.
 
 ### Template Structure
 
