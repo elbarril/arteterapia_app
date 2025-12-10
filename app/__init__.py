@@ -1,9 +1,8 @@
 """Flask application factory."""
-from flask import Flask, request, redirect, url_for, flash
+from flask import Flask, request, redirect, url_for, flash, session, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_admin import Admin, AdminIndexView
-from flask_babel import Babel
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager, current_user
 from config import config
@@ -12,7 +11,6 @@ from config import config
 db = SQLAlchemy()
 migrate = Migrate()
 admin = Admin(name='Arteterapia Admin', template_mode='bootstrap4')
-babel = Babel()
 bootstrap = Bootstrap5()
 login_manager = LoginManager()
 
@@ -58,14 +56,7 @@ def create_app(config_name='default'):
         from app.models.user import User
         return User.query.get(int(user_id))
     
-    # Initialize Babel with locale selector
-    def get_locale():
-        """Select best language match from client preferences."""
-        return request.accept_languages.best_match(
-            app.config['LANGUAGES'].keys()
-        ) or app.config['BABEL_DEFAULT_LOCALE']
-    
-    babel.init_app(app, locale_selector=get_locale)
+
     
     # Register blueprints
     from app.controllers.auth import auth_bp
@@ -112,4 +103,6 @@ def create_app(config_name='default'):
     admin.add_view(RoleAdminView(Role, db.session, name='Roles'))
     admin.add_view(UserInvitationAdminView(UserInvitation, db.session, name='Invitaciones'))
     
+    # Expose config to templates
+    app.jinja_env.globals['config'] = app.config
     return app

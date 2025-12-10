@@ -16,8 +16,8 @@
     <div class="row g-4">
         {% for workshop in workshops %}
         <div class="col-md-6 col-lg-4">
-            <div class="workshop-card"
-                onclick="window.location.href='{{ url_for('workshop_bp.detail', workshop_id=workshop.id) }}'">
+            <a href="{{ url_for('workshop_bp.detail', workshop_id=workshop.id) }}"
+                class="workshop-card d-block text-decoration-none">
                 <div class="workshop-card-body">
                     <h5 class="workshop-card-title">{{ workshop.name }}</h5>
                     <div class="workshop-card-stats">
@@ -29,7 +29,7 @@
                         </span>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         {% endfor %}
     </div>

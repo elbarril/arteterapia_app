@@ -364,3 +364,5 @@ class UserInvitationAdminView(SecureModelView):
             # Send invitation email after commit
             db.session.flush()
             send_invitation_email(model)
+
+

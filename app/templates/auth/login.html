@@ -13,34 +13,31 @@
                         Arteterapia
                     </h3>
                     <h5 class="text-center text-muted mb-4">Iniciar Sesión</h5>
-                    
+
                     <form method="POST" action="{{ url_for('auth_bp.login') }}">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Usuario o Correo</label>
+                            <label for="username" class="form-label">Usuario o Email</label>
                             <input type="text" class="form-control" id="username" name="username" required autofocus>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
-                        
+
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">
-                                Recordarme
-                            </label>
+                            <label class="form-check-label" for="remember">Recordarme</label>
                         </div>
-                        
+
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
                         </div>
                     </form>
-                    
+
                     <div class="text-center mt-3">
-                        <a href="{{ url_for('auth_bp.forgot_password') }}" class="text-muted small">
-                            ¿Olvidaste tu contraseña?
-                        </a>
+                        <a href="{{ url_for('auth_bp.forgot_password') }}" class="text-muted small">¿Olvidaste tu
+                            contraseña?</a>
                     </div>
                 </div>
             </div>

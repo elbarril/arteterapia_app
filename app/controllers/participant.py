@@ -1,6 +1,6 @@
 """Participant controller."""
 from flask import Blueprint, request, jsonify
-from flask_babel import gettext as _
+
 from flask_login import login_required
 from app import db
 from app.models.participant import Participant
@@ -21,7 +21,7 @@ def create_participant(workshop_id):
     if not name:
         return jsonify({
             'success': False,
-            'message': _('El nombre es obligatorio')
+            'message': 'El nombre es obligatorio'
         }), 400
     
     participant = Participant(name=name, workshop_id=workshop_id)
@@ -30,7 +30,7 @@ def create_participant(workshop_id):
     
     return jsonify({
         'success': True,
-        'message': _('Participante agregado'),
+        'message': 'Participante agregado',
         'participant': {
             'id': participant.id,
             'name': participant.name
@@ -51,7 +51,7 @@ def update_participant(participant_id):
     if not name:
         return jsonify({
             'success': False,
-            'message': _('El nombre es obligatorio')
+            'message': 'El nombre es obligatorio'
         }), 400
     
     participant.name = name
@@ -59,7 +59,7 @@ def update_participant(participant_id):
     
     return jsonify({
         'success': True,
-        'message': _('Participante actualizado'),
+        'message': 'Participante actualizado',
         'participant': {
             'id': participant.id,
             'name': participant.name
@@ -81,6 +81,6 @@ def delete_participant(participant_id):
     
     return jsonify({
         'success': True,
-        'message': _('Participante eliminado'),
+        'message': 'Participante eliminado',
         'participant_count': workshop.participant_count
     })

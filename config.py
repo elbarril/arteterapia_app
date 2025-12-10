@@ -15,14 +15,6 @@ class Config:
         f'sqlite:///{basedir / "arteterapia.db"}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Flask-Babel configuration
-    BABEL_DEFAULT_LOCALE = 'es'  # Spanish as default
-    BABEL_DEFAULT_TIMEZONE = 'America/Argentina/Buenos_Aires'
-    LANGUAGES = {
-        'es': 'Español',
-        'en': 'English'
-    }
-    
     # Flask-Admin configuration
     FLASK_ADMIN_SWATCH = 'cerulean'
     

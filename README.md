@@ -2,6 +2,23 @@
 
 A complete Flask-based web application for art therapists to manage workshops, sessions, participants, and therapeutic observational records.
 
+---
+
+## 🤖 For AI Agents & Developers
+
+**IMPORTANT**: Before working on this project, read the comprehensive documentation in the **`.agent/`** directory:
+
+- **[AGENT_GUIDELINES.md](.agent/AGENT_GUIDELINES.md)** - 📘 Complete project guide (READ THIS FIRST)
+- **[QUICK_REFERENCE.md](.agent/QUICK_REFERENCE.md)** - ⚡ Fast lookup reference
+- **[ARCHITECTURE.md](.agent/ARCHITECTURE.md)** - 📊 Visual system architecture
+- **[Workflows](.agent/workflows/)** - 📂 Step-by-step task guides
+
+**Workflow shortcuts**: `/setup-environment`, `/modify-models`, `/reset-database`
+
+This documentation contains essential context including architecture, security guidelines, database models, observation question structure, and development standards.
+
+---
+
 ## Features
 
 - **Workshop Management**: Create and manage art therapy workshops with objectives
@@ -10,7 +27,6 @@ A complete Flask-based web application for art therapists to manage workshops, s
 - **Observational Records**: Step-by-step therapeutic observation flow with 8 comprehensive categories
 - **Consolidated Reporting**: View all observations in a structured table format
 - **Admin Interface**: Full CRUD operations for internal testing and data correction
-- **Internationalization**: Built-in i18n support (Spanish default, English available)
 - **Database Portability**: SQLAlchemy + Alembic for easy database migration
 
 ## Technology Stack
@@ -19,7 +35,6 @@ A complete Flask-based web application for art therapists to manage workshops, s
 - **Database**: SQLAlchemy ORM with SQLite (development) / PostgreSQL or MySQL ready
 - **Migrations**: Flask-Migrate (Alembic)
 - **Admin**: Flask-Admin
-- **i18n**: Flask-Babel
 - **Frontend**: Bootstrap 5 + Custom minimalist CSS
 - **JavaScript**: Vanilla JS with AJAX for dynamic interactions
 

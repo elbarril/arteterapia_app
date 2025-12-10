@@ -1,0 +1,68 @@
+# <type>: <subject>
+#
+# <body (optional - explain WHY, not WHAT)>
+#
+# <footer (optional - reference issues, breaking changes)>
+#
+# ────────────────────────────────────────────────────────────────
+# Commit Message Guidelines for Arteterapia Project
+# ────────────────────────────────────────────────────────────────
+#
+# BEFORE COMMITTING: Ensure changes align with .agent/AGENT_GUIDELINES.md
+#
+# Types:
+#   feat      - New feature
+#   fix       - Bug fix
+#   docs      - Documentation changes
+#   refactor  - Code refactoring (no functional change)
+#   test      - Adding or updating tests
+#   chore     - Maintenance tasks (dependencies, config)
+#   i18n      - Translation updates
+#   db        - Database model or migration changes
+#   security  - Security-related changes
+#   ui        - UI/UX improvements
+#
+# Subject:
+#   - Use imperative mood ("Add feature" not "Added feature")
+#   - No period at the end
+#   - Keep under 50 characters
+#   - Be specific and descriptive
+#
+# Body:
+#   - Explain WHY, not WHAT (code shows what)
+#   - Wrap at 72 characters
+#   - Separate from subject with blank line
+#   - Use bullet points for multiple changes
+#
+# Examples:
+#   feat: Add participant age filtering in workshop detail view
+#
+#   fix: Resolve language switcher session persistence bug
+#   
+#   The session['lang'] was not being set correctly when using
+#   the language switcher. Updated the /lang/<code> route to
+#   properly store the selection before redirect.
+#
+#   db: Add cascade delete to Session-Observation relationship
+#   
+#   When a session is deleted, orphaned observations were remaining
+#   in the database. Added CASCADE on delete to observation foreign key
+#   to automatically clean up related records.
+#
+#   i18n: Update English translations for authentication module
+#   
+#   Resolves #15
+#
+# Footer:
+#   - Reference issues: "Fixes #123" or "Closes #45"
+#   - Note breaking changes: "BREAKING CHANGE: ..."
+#
+# ────────────────────────────────────────────────────────────────
+# Remember:
+#   ✅ Read .agent/AGENT_GUIDELINES.md before contributing
+#   ✅ Use workflows in .agent/workflows/ for common tasks
+#   ✅ Test both Spanish and English
+#   ✅ Verify Admin and Editor perspectives
+#   ❌ Never commit .env, .db, or .mo files
+#   ❌ Never modify observation question IDs if data exists
+# ────────────────────────────────────────────────────────────────

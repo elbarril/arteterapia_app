@@ -1,6 +1,6 @@
 """Workshop controller."""
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
-from flask_babel import gettext as _
+
 from flask_login import login_required, current_user
 from app import db
 from app.models.workshop import Workshop
@@ -27,14 +27,14 @@ def create_workshop():
     """Create a new workshop."""
     name = request.form.get('name', '').strip()
     if not name:
-        return jsonify({'success': False, 'message': _('El nombre es requerido')}), 400
+        return jsonify({'success': False, 'message': 'El nombre es requerido'}), 400
     
     # Create workshop owned by current user
     workshop = Workshop(name=name, user_id=current_user.id)
     db.session.add(workshop)
     db.session.commit()
     
-    flash(_('Taller creado exitosamente'), 'success')
+    flash('Taller creado exitosamente', 'success')
     return redirect(url_for('workshop_bp.detail', workshop_id=workshop.id))
 
 
@@ -46,7 +46,7 @@ def detail(workshop_id):
     
     # Check if user owns this workshop (admins can access all)
     if not current_user.is_admin() and workshop.user_id != current_user.id:
-        flash(_('No tienes permiso para acceder a este taller'), 'danger')
+        flash('No tienes permiso para acceder a este taller', 'danger')
         return redirect(url_for('workshop_bp.list_workshops'))
     participants = workshop.participants.all()
     sessions = workshop.sessions.order_by('created_at').all()
@@ -77,7 +77,7 @@ def update_objective(workshop_id):
     
     # Check ownership
     if not current_user.is_admin() and workshop.user_id != current_user.id:
-        return jsonify({'success': False, 'message': _('No tienes permiso')}), 403
+        return jsonify({'success': False, 'message': 'No tienes permiso'}), 403
     
     data = request.get_json()
     objective = data.get('objective', '').strip()
@@ -87,7 +87,7 @@ def update_objective(workshop_id):
     
     return jsonify({
         'success': True,
-        'message': _('Objetivo actualizado'),
+        'message': 'Objetivo actualizado',
         'objective': objective
     })
 
@@ -100,11 +100,11 @@ def delete_workshop(workshop_id):
     
     # Check ownership
     if not current_user.is_admin() and workshop.user_id != current_user.id:
-        flash(_('No tienes permiso para eliminar este taller'), 'danger')
+        flash('No tienes permiso para eliminar este taller', 'danger')
         return redirect(url_for('workshop_bp.list_workshops'))
     
     db.session.delete(workshop)
     db.session.commit()
     
-    flash(_('Taller eliminado'), 'info')
+    flash('Taller eliminado', 'info')
     return redirect(url_for('workshop_bp.list_workshops'))

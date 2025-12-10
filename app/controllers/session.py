@@ -1,6 +1,6 @@
 """Session controller."""
 from flask import Blueprint, request, jsonify
-from flask_babel import gettext as _
+
 from flask_login import login_required
 from app import db
 from app.models.session import Session
@@ -23,7 +23,7 @@ def create_session(workshop_id):
     if not prompt:
         return jsonify({
             'success': False,
-            'message': _('La consigna es obligatoria')
+            'message': 'La consigna es obligatoria'
         }), 400
     
     # Parse materials as comma-separated list
@@ -40,7 +40,7 @@ def create_session(workshop_id):
     
     return jsonify({
         'success': True,
-        'message': _('Sesión creada'),
+        'message': 'Sesión creada',
         'session': {
             'id': session.id,
             'prompt': session.prompt,
@@ -66,7 +66,7 @@ def update_session(session_id):
     if not prompt:
         return jsonify({
             'success': False,
-            'message': _('La consigna es obligatoria')
+            'message': 'La consigna es obligatoria'
         }), 400
     
     # Parse materials as comma-separated list
@@ -79,7 +79,7 @@ def update_session(session_id):
     
     return jsonify({
         'success': True,
-        'message': _('Sesión actualizada'),
+        'message': 'Sesión actualizada',
         'session': {
             'id': session.id,
             'prompt': session.prompt,
@@ -104,6 +104,6 @@ def delete_session(session_id):
     
     return jsonify({
         'success': True,
-        'message': _('Sesión eliminada'),
+        'message': 'Sesión eliminada',
         'session_count': workshop.session_count
     })

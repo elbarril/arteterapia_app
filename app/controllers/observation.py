@@ -1,6 +1,6 @@
 """Observation controller."""
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session as flask_session
-from flask_babel import gettext as _
+
 from flask_login import login_required
 from app import db
 from app.models.session import Session
@@ -70,7 +70,7 @@ def process_answer():
     question_id = data.get('question_id')
     
     if 'observation_data' not in flask_session:
-        return jsonify({'success': False, 'message': _('Sesión expirada')}), 400
+        return jsonify({'success': False, 'message': 'Sesión expirada'}), 400
     
     # Store answer
     obs_data = flask_session['observation_data']
@@ -102,7 +102,7 @@ def process_answer():
         return jsonify({
             'success': True,
             'has_more': False,
-            'message': _('Todas las preguntas respondidas')
+            'message': 'Todas las preguntas respondidas'
         })
 
 
@@ -111,7 +111,7 @@ def process_answer():
 def complete_observation():
     """Save the completed observation with optional freeform notes."""
     if 'observation_data' not in flask_session:
-        return jsonify({'success': False, 'message': _('Sesión expirada')}), 400
+        return jsonify({'success': False, 'message': 'Sesión expirada'}), 400
     
     data = request.get_json()
     freeform_notes = data.get('freeform_notes', '').strip()
@@ -140,7 +140,7 @@ def complete_observation():
     
     return jsonify({
         'success': True,
-        'message': _('Registro guardado exitosamente'),
+        'message': 'Registro guardado exitosamente',
         'redirect_url': url_for('workshop_bp.detail', workshop_id=session_obj.workshop_id)
     })
 
