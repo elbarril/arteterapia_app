@@ -624,7 +624,7 @@ Based on recent conversation summaries:
 From conversation history:
 - User prefers **descriptive Git commits** with granular changes
 - User values **comprehensive documentation**
-- User wants to avoid icons in documentation or code
+- User wants to avoid icons in documentation or code or commits messages
 - User expects **systematic approach** to development tasks
 - User likes to **review changes** before major actions
 
