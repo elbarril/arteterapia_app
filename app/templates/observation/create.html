@@ -9,8 +9,9 @@
             <!-- Progress Header -->
             <div class="text-center mb-4">
                 <a href="{{ url_for('workshop_bp.detail', workshop_id=session.workshop_id) }}"
-                    class="text-muted text-decoration-none d-inline-block mb-3">
-                    <i class="bi bi-arrow-left"></i> Cancelar
+                    class="text-muted text-decoration-none d-inline-block mb-3"
+                    aria-label="Cancelar y volver al taller">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i> Cancelar
                 </a>
                 <h5 class="text-muted mb-2">{{ participant.name }}</h5>
                 {% if is_redo %}
@@ -20,8 +21,10 @@
                 {% endif %}
                 <p class="text-muted small">{{ session.prompt[:60] }}{% if session.prompt|length > 60 %}...{% endif %}
                 </p>
-                <div class="progress" style="height: 4px;">
-                    <div class="progress-bar" role="progressbar" id="observationProgress"
+                <div class="progress" style="height: 4px;" role="progressbar"
+                    aria-valuenow="{{ ((question_index + 1) / total_questions * 100)|int }}" aria-valuemin="0"
+                    aria-valuemax="100" aria-label="Progreso de observación">
+                    <div class="progress-bar" id="observationProgress"
                         style="width: {{ ((question_index + 1) / total_questions * 100)|int }}%"></div>
                 </div>
                 <p class="text-muted small mt-2">
@@ -38,12 +41,12 @@
                         <br><small class="text-muted">{{ question.subcategory }}</small>
                         {% endif %}
                     </div>
-                    <h4 class="text-center mb-4" id="questionText">{{ question.text }}</h4>
+                    <h1 class="h4 text-center mb-4" id="questionText">{{ question.text }}</h1>
 
-                    <div class="d-grid gap-3" id="answerButtons">
+                    <div class="d-grid gap-3" id="answerButtons" role="group" aria-label="Opciones de respuesta">
                         {% for key, label in answer_options.items() %}
-                        <button class="btn btn-lg btn-outline-primary answer-btn" onclick="submitAnswer('{{ key }}')"
-                            id="answer_{{ key }}">
+                        <button class="btn btn-lg btn-outline-primary answer-btn" data-action="submit-answer"
+                            data-answer-value="{{ key }}" id="answer_{{ key }}" aria-label="Responder {{ label }}">
                             {{ label }}
                         </button>
                         {% endfor %}
@@ -54,16 +57,19 @@
             <!-- Freeform Notes (shown at the end) -->
             <div class="card border-0 shadow-sm observation-card d-none" id="notesCard">
                 <div class="card-body p-4">
-                    <h4 class="text-center mb-4">Observaciones adicionales</h4>
+                    <h2 class="h4 text-center mb-4">Observaciones adicionales</h2>
                     <p class="text-muted text-center mb-4">
                         Optionalmente puede agregar notas u observaciones adicionales sobre esta sesión
                     </p>
                     <div class="mb-4">
+                        <label for="freeformNotes" class="sr-only">Observaciones adicionales</label>
                         <textarea class="form-control" id="freeformNotes" rows="5"
-                            placeholder="Escriba aquí sus observaciones..."></textarea>
+                            placeholder="Escriba aquí sus observaciones..."
+                            aria-label="Observaciones adicionales"></textarea>
                     </div>
                     <div class="d-grid">
-                        <button class="btn btn-lg btn-primary" onclick="completeObservation()">
+                        <button class="btn btn-lg btn-primary" data-action="complete-observation"
+                            aria-label="Finalizar registro de observación">
                             Finalizar registro
                         </button>
                     </div>
@@ -76,112 +82,13 @@
 
 {% block extra_js %}
 <script>
-    let currentQuestionId = "{{ question.id }}";
-    let currentIndex = {{ question_index }};
-    const totalQuestions = {{ total_questions }};
-    const previousAnswers = {{ previous_answers| tojson | safe }};
-    const isRedo = {{ 'true' if is_redo else 'false' }};
-
-    // Highlight the current answer if it was previously answered
-    function highlightPreviousAnswer() {
-        const previousAnswer = previousAnswers[currentQuestionId];
-        if (previousAnswer) {
-            const answerBtn = document.getElementById('answer_' + previousAnswer);
-            if (answerBtn) {
-                answerBtn.classList.add('previously-answered');
-            }
-        }
-    }
-
-    // Call on page load
-    document.addEventListener('DOMContentLoaded', highlightPreviousAnswer);
-
-    function submitAnswer(answer) {
-        // Disable buttons during submission
-        const buttons = document.querySelectorAll('.answer-btn');
-        buttons.forEach(btn => btn.disabled = true);
-
-        fetch("{{ url_for('observation_bp.process_answer') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                question_id: currentQuestionId,
-                answer: answer
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.has_more) {
-                        // Update to next question
-                        currentQuestionId = data.next_question.id;
-                        currentIndex = data.question_index;
-
-                        document.getElementById('questionText').textContent = data.next_question.text;
-                        document.getElementById('currentQuestion').textContent = currentIndex + 1;
-
-                        // Update category
-                        let categoryHTML = '<small class="text-muted text-uppercase fw-bold">' + data.next_question.category + '</small>';
-                        if (data.next_question.subcategory) {
-                            categoryHTML += '<br><small class="text-muted">' + data.next_question.subcategory + '</small>';
-                        }
-                        document.getElementById('questionCategory').innerHTML = categoryHTML;
-
-                        // Update progress
-                        const progress = ((currentIndex + 1) / totalQuestions * 100);
-                        document.getElementById('observationProgress').style.width = progress + '%';
-
-                        // Remove previous highlighting
-                        buttons.forEach(btn => {
-                            btn.classList.remove('previously-answered');
-                            btn.disabled = false;
-                        });
-
-                        // Highlight if this question was previously answered
-                        highlightPreviousAnswer();
-                    } else {
-                        // Show notes card
-                        document.getElementById('questionCard').classList.add('d-none');
-                        document.getElementById('notesCard').classList.remove('d-none');
-                    }
-                } else {
-                    showModal.alert(data.message || 'Error al procesar respuesta');
-                    buttons.forEach(btn => btn.disabled = false);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showModal.alert('Error de conexión');
-                buttons.forEach(btn => btn.disabled = false);
-            });
-    }
-
-    function completeObservation() {
-        const notes = document.getElementById('freeformNotes').value;
-
-        fetch("{{ url_for('observation_bp.complete_observation') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                freeform_notes: notes
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = data.redirect_url;
-                } else {
-                    showModal.alert(data.message || 'Error al guardar');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showModal.alert('Error de conexión');
-            });
-    }
+    // Observation configuration for ObservationFlow module
+    const observationConfig = {
+        currentQuestionId: "{{ question.id }}",
+        currentIndex: {{ question_index }},
+    totalQuestions: { { total_questions } },
+    previousAnswers: { { previous_answers | tojson | safe } },
+    isRedo: { { 'true' if is_redo else 'false' } }
+    };
 </script>
 {% endblock %}
