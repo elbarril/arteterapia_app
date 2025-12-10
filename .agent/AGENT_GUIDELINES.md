@@ -680,7 +680,288 @@ pybabel compile -d translations
 
 ---
 
+## Frontend Architecture
+
+### Overview
+The frontend follows modern best practices with **Atomic Design CSS**, **Object-Oriented JavaScript**, and **comprehensive accessibility** (WCAG 2.1 AA compliant).
+
+### CSS Architecture - Atomic Design
+
+**Location**: `app/static/css/`
+
+The CSS is organized using Atomic Design methodology for maximum maintainability and reusability:
+
+```
+css/
+├── main.css                    # Main aggregator (imports all modules)
+├── tokens/
+│   └── variables.css           # Design tokens (colors, spacing, typography, shadows)
+├── atoms/                      # Basic building blocks
+│   ├── typography.css          # Text styles
+│   ├── buttons.css             # Button styles
+│   ├── forms.css               # Form control styles
+│   └── badges.css              # Badge styles
+├── molecules/                  # Simple components
+│   ├── cards.css               # Card components
+│   ├── modals.css              # Modal dialogs
+│   ├── lists.css               # List groups
+│   ├── tables.css              # Table styles
+│   └── progress.css            # Progress bars
+├── organisms/                  # Complex components
+│   ├── navbar.css              # Navigation bar
+│   ├── workshop.css            # Workshop-specific components
+│   ├── session.css             # Session cards and interactions
+│   └── observation.css         # Observation flow components
+└── utilities/                  # Helper classes
+    ├── animations.css          # Transition timing
+    └── accessibility.css       # Focus states, sr-only class
+```
+
+**Design Tokens** (`tokens/variables.css`):
+- Brand colors (primary, secondary, accent)
+- Spacing scale (xs, sm, md, lg, xl)
+- Typography (font families, sizes, weights)
+- Border radius values
+- Shadow definitions
+- Transition timings
+
+**Usage**:
+```css
+/* Use design tokens instead of hard-coded values */
+.my-component {
+    color: var(--primary-color);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+```
+
+### JavaScript Architecture - OOP Modules
+
+**Location**: `app/static/js/`
+
+The JavaScript follows Object-Oriented Programming with modular architecture:
+
+```
+js/
+├── app.js                      # Application initializer
+├── core/                       # Core utilities
+│   ├── api-client.js           # APIClient class (centralized AJAX)
+│   └── modal-manager.js        # ModalManager class (Bootstrap modals)
+└── modules/                    # Feature modules
+    ├── workshop-detail.js      # WorkshopDetailManager + sub-managers
+    └── observation.js          # ObservationFlow class
+```
+
+#### Core Modules
+
+**APIClient** (`core/api-client.js`):
+```javascript
+// Centralized AJAX request handler
+const apiClient = new APIClient();
+
+// Usage
+const data = await apiClient.post('/endpoint', { key: 'value' });
+```
+
+**ModalManager** (`core/modal-manager.js`):
+```javascript
+// Bootstrap modal wrapper
+const modalManager = new ModalManager();
+
+// Usage
+await modalManager.alert('Message');
+const confirmed = await modalManager.confirm('Are you sure?');
+const value = await modalManager.prompt('Enter value:', 'default');
+```
+
+#### Feature Modules
+
+**WorkshopDetailManager** (`modules/workshop-detail.js`):
+- Manages all interactions on workshop detail page
+- Uses event delegation (no inline onclick handlers)
+- Sub-managers:
+  - `ObjectiveManager`: Edit workshop objective
+  - `ParticipantManager`: CRUD operations for participants
+  - `SessionManager`: CRUD operations for sessions
+
+**ObservationFlow** (`modules/observation.js`):
+- Manages step-by-step observation recording
+- Handles question progression
+- Highlights previously answered questions
+- Submits answers via APIClient
+
+#### Application Initialization
+
+**app.js**:
+```javascript
+// Detects current page and initializes appropriate manager
+function initializePage() {
+    const path = window.location.pathname;
+    
+    if (path.match(/^\/workshop\/\d+$/)) {
+        new WorkshopDetailManager(workshopId);
+    }
+    
+    if (path.match(/^\/session\/\d+\/observe\/\d+$/)) {
+        new ObservationFlow(observationConfig);
+    }
+}
+```
+
+### Template Architecture
+
+**Zero Inline JavaScript**: All templates use `data-action` attributes instead of `onclick`:
+
+```html
+<!-- OLD (removed) -->
+<button onclick="deleteItem(123)">Delete</button>
+
+<!-- NEW (current) -->
+<button data-action="delete-item" data-item-id="123">Delete</button>
+```
+
+**Event Delegation**: JavaScript modules listen for clicks on parent elements:
+
+```javascript
+document.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('[data-action="delete-item"]');
+    if (deleteBtn) {
+        const id = deleteBtn.dataset.itemId;
+        this.delete(id);
+    }
+});
+```
+
+### Accessibility Features
+
+**ARIA Attributes**:
+- `aria-label`: Descriptive labels for all interactive elements
+- `aria-hidden="true"`: Decorative icons hidden from screen readers
+- `aria-expanded`, `aria-controls`: For collapsible elements
+- `aria-valuenow`, `aria-valuemin`, `aria-valuemax`: For progress bars
+- `role="button"`, `role="group"`: Semantic roles
+
+**Keyboard Navigation**:
+- `tabindex="0"`: Keyboard focusable elements
+- Focus states: Visible outline for keyboard users
+- Enter key support for custom interactive elements
+
+**Screen Reader Support**:
+- `.sr-only` class: Visually hidden but read by screen readers
+- Proper heading hierarchy (h1 → h2 → h3)
+- Semantic HTML5 elements (`<nav>`, `<section>`, `<article>`)
+
+**Example**:
+```html
+<button data-action="toggle-session" 
+        data-session-id="5"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="session5"
+        aria-label="Expandir detalles de la sesión">
+    <i class="bi bi-chevron-down" aria-hidden="true"></i>
+</button>
+```
+
+### Testing Infrastructure
+
+**Location**: `tests/`
+
+```
+tests/
+├── conftest.py                 # Pytest fixtures (app, database, users)
+├── unit/                       # Unit tests
+├── integration/                # Integration tests
+│   ├── test_workshop_routes.py
+│   ├── test_participant_routes.py
+│   ├── test_session_routes.py
+│   └── test_observation_routes.py
+└── e2e/                        # End-to-end tests (Selenium)
+```
+
+**Running Tests**:
+```bash
+# All tests
+pytest -v
+
+# Specific category
+pytest tests/integration/ -v
+
+# With coverage
+pytest --cov=app tests/
+
+# Specific markers
+pytest -m unit
+pytest -m integration
+pytest -m e2e
+```
+
+**Test Fixtures** (in `conftest.py`):
+- `app`: Test Flask application with in-memory SQLite
+- `client`: Test client for making requests
+- `db_session`: Database session with automatic cleanup
+- `admin_user`, `editor_user`: Pre-created test users
+- `workshop`, `participant`, `session_obj`: Test data
+- `authenticated_client`: Client logged in as admin
+
+### Frontend Development Guidelines
+
+**CSS Best Practices**:
+1. Always use design tokens from `variables.css`
+2. Follow Atomic Design hierarchy (atoms → molecules → organisms)
+3. Keep specificity low (avoid deep nesting)
+4. Use BEM-like naming for custom classes
+5. Maintain 100% visual compatibility when refactoring
+
+**JavaScript Best Practices**:
+1. Use ES6+ features (classes, async/await, arrow functions)
+2. Keep modules focused (single responsibility)
+3. Use event delegation instead of inline handlers
+4. Always use `apiClient` for AJAX requests
+5. Always use `modalManager` for alerts/confirms/prompts
+6. Handle errors gracefully with try/catch
+
+**Template Best Practices**:
+1. NO inline JavaScript (use `data-action` attributes)
+2. Add ARIA labels to ALL interactive elements
+3. Mark decorative icons with `aria-hidden="true"`
+4. Use semantic HTML5 elements
+5. Maintain proper heading hierarchy
+6. Add `sr-only` labels for form fields
+
+**Accessibility Checklist**:
+- [ ] All buttons have `aria-label`
+- [ ] All icons have `aria-hidden="true"`
+- [ ] Collapsible elements have `aria-expanded` and `aria-controls`
+- [ ] Progress bars have `aria-valuenow`, `aria-valuemin`, `aria-valuemax`
+- [ ] Form fields have visible or `sr-only` labels
+- [ ] Keyboard navigation works (Tab, Enter, Space)
+- [ ] Focus states are visible
+- [ ] Color contrast meets WCAG AA standards
+
+### Performance Considerations
+
+**CSS**:
+- Modular files enable better browser caching
+- Main.css imports all modules (single HTTP request in production)
+- Design tokens reduce CSS duplication
+
+**JavaScript**:
+- Modules loaded in correct order (core → modules → app)
+- Event delegation reduces memory usage
+- Lazy initialization (only load managers for current page)
+
+**Templates**:
+- Server-side rendering (no client-side frameworks)
+- Minimal JavaScript for fast initial load
+- Progressive enhancement approach
+
+---
+
 ## Additional Resources
+
 
 - **Flask Documentation**: https://flask.palletsprojects.com/
 - **SQLAlchemy Documentation**: https://www.sqlalchemy.org/
