@@ -57,28 +57,37 @@ def init_database():
     
     # Check if migrations directory exists
     migrations_dir = 'migrations'
-    if not os.path.exists(migrations_dir):
+    migrations_exist = os.path.exists(migrations_dir)
+    
+    if not migrations_exist:
         print("Migrations directory not found. Creating...")
         migrate_init()
-        print("✓ Migrations directory created")
+        print("[OK] Migrations directory created")
     
-    # Apply all migrations
-    print("Applying migrations...")
-    try:
-        upgrade()
-        print("✓ Database migrations applied successfully")
-    except Exception as e:
-        print(f"Error applying migrations: {e}")
-        print("Creating all tables directly...")
-        db.create_all()
-        print("✓ All tables created")
+    # Apply all migrations if they exist
+    if migrations_exist:
+        print("Applying migrations...")
+        try:
+            upgrade()
+            print("[OK] Database migrations applied successfully")
+        except Exception as e:
+            print(f"[!!] Warning: Error applying migrations: {e}")
+            print("Will create tables directly instead...")
+    
+    # Always ensure tables exist (idempotent operation)
+    print("Ensuring all tables are created...")
+    db.create_all()
+    print("[OK] All tables verified/created")
     
     # Verify tables were created
     from sqlalchemy import inspect
     inspector = inspect(db.engine)
     tables = inspector.get_table_names()
     
-    print(f"\n✓ Database initialized successfully!")
+    if len(tables) == 0:
+        raise Exception("No tables were created! Check your models.")
+    
+    print(f"\n[OK] Database initialized successfully!")
     print(f"  Tables created: {len(tables)}")
     for table in sorted(tables):
         print(f"    - {table}")

@@ -28,14 +28,14 @@ def app():
         db.create_all()
         
         # Create roles only if they don't exist
-        admin_role = Role.query.filter_by(name='Admin').first()
+        admin_role = Role.query.filter_by(name='admin').first()
         if not admin_role:
-            admin_role = Role(name='Admin', description='Administrator role')
+            admin_role = Role(name='admin', description='Administrator role')
             db.session.add(admin_role)
         
-        editor_role = Role.query.filter_by(name='Editor').first()
+        editor_role = Role.query.filter_by(name='editor').first()
         if not editor_role:
-            editor_role = Role(name='Editor', description='Editor role')
+            editor_role = Role(name='editor', description='Editor role')
             db.session.add(editor_role)
         
         db.session.commit()
@@ -82,7 +82,7 @@ def db_session(app):
 @pytest.fixture
 def admin_user(db_session):
     """Create an admin user for testing."""
-    admin_role = Role.query.filter_by(name='Admin').first()
+    admin_role = Role.query.filter_by(name='admin').first()
     user = User(
         username='testadmin',
         email='admin@test.com',
@@ -98,7 +98,7 @@ def admin_user(db_session):
 @pytest.fixture
 def editor_user(db_session):
     """Create an editor user for testing."""
-    editor_role = Role.query.filter_by(name='Editor').first()
+    editor_role = Role.query.filter_by(name='editor').first()
     user = User(
         username='testeditor',
         email='editor@test.com',
@@ -112,9 +112,13 @@ def editor_user(db_session):
 
 
 @pytest.fixture
-def workshop(db_session):
+def workshop(db_session, admin_user):
     """Create a test workshop."""
-    workshop = Workshop(name='Test Workshop', objective='Test objective')
+    workshop = Workshop(
+        name='Test Workshop',
+        objective='Test objective',
+        user_id=admin_user.id
+    )
     db.session.add(workshop)
     db.session.commit()
     return workshop
