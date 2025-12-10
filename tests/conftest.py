@@ -70,7 +70,7 @@ def db_session(app):
         # Clear user_roles
         db.session.execute(db.metadata.tables['user_roles'].delete())
         # Clear users (but not roles)
-        db.session.execute(db.metadata.tables['user'].delete())
+        db.session.execute(db.metadata.tables['users'].delete())
         db.session.commit()
         
         yield db.session
