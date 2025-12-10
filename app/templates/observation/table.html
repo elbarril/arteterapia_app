@@ -6,8 +6,8 @@
 <div class="container-fluid">
     <div class="mb-4">
         <a href="{{ url_for('workshop_bp.detail', workshop_id=workshop.id) }}"
-            class="text-muted text-decoration-none mb-2 d-inline-block">
-            <i class="bi bi-arrow-left"></i> Volver al taller
+            class="text-muted text-decoration-none mb-2 d-inline-block" aria-label="Volver al taller">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al taller
         </a>
         <h1 class="display-6 fw-light">Registros de Observación</h1>
         <p class="text-muted">{{ workshop.name }}</p>
@@ -38,8 +38,10 @@
                     </td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse"
-                            data-bs-target="#answers{{ obs.id }}">
-                            Ver respuestas <i class="bi bi-chevron-down"></i>
+                            data-bs-target="#answers{{ obs.id }}" aria-expanded="false"
+                            aria-controls="answers{{ obs.id }}"
+                            aria-label="Ver respuestas de {{ obs.participant.name }}">
+                            Ver respuestas <i class="bi bi-chevron-down" aria-hidden="true"></i>
                         </button>
                         <div class="collapse mt-2" id="answers{{ obs.id }}">
                             <div class="card card-body small">
@@ -89,7 +91,8 @@
                     <td>
                         {% if obs.freeform_notes %}
                         <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="popover"
-                            data-bs-content="{{ obs.freeform_notes }}" data-bs-trigger="focus" tabindex="0">
+                            data-bs-content="{{ obs.freeform_notes }}" data-bs-trigger="focus" tabindex="0"
+                            aria-label="Ver notas de {{ obs.participant.name }}">
                             Ver notas
                         </button>
                         {% else %}
@@ -98,8 +101,9 @@
                     </td>
                     <td>
                         <a href="/admin/observationalrecord/edit/?id={{ obs.id }}"
-                            class="btn btn-sm btn-link text-muted" target="_blank">
-                            <i class="bi bi-pencil"></i>
+                            class="btn btn-sm btn-link text-muted" target="_blank"
+                            aria-label="Editar registro de {{ obs.participant.name }}">
+                            <i class="bi bi-pencil" aria-hidden="true"></i>
                         </a>
                     </td>
                 </tr>
