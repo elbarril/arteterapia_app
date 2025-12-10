@@ -1,0 +1,58 @@
+/* Workshop Organism
+ * Workshop-specific component styles
+ */
+
+/* Workshop cards */
+.workshop-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all var(--transition-base) ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.workshop-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.workshop-card-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.workshop-card-stats {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.workshop-card-stats .badge {
+    font-weight: var(--font-weight-normal);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-light);
+}
+
+/* Objective section */
+.objective-display {
+    cursor: pointer;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.objective-display:hover {
+    background-color: var(--bg-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .workshop-card {
+        padding: var(--spacing-md);
+    }
+}

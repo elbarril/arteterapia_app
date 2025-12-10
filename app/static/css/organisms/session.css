@@ -1,0 +1,50 @@
+/* Session Organism
+ * Session-specific component styles
+ */
+
+/* Session cards with expand/collapse */
+.session-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color var(--transition-fast);
+}
+
+.session-card:hover {
+    border-color: var(--tertiary-color);
+}
+
+.session-card-header {
+    padding: var(--spacing-md);
+    background: var(--bg-white);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: all var(--transition-fast);
+}
+
+.session-card-header:hover {
+    background-color: var(--bg-light);
+}
+
+.session-card-header h6 {
+    margin: 0;
+    flex: 1;
+}
+
+.session-toggle-icon {
+    transition: transform var(--transition-base) ease;
+    color: var(--tertiary-color);
+}
+
+.session-card-header[aria-expanded="true"] .session-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.session-card-body {
+    padding: var(--spacing-md);
+    background: var(--bg-white);
+}

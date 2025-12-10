@@ -1,0 +1,9 @@
+/* Modal Molecules
+ * Modal dialog styles
+ */
+
+.modal-content {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-xl);
+}

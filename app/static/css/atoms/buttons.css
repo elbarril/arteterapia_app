@@ -1,0 +1,56 @@
+/* Button Atoms
+ * Semantic button hierarchy (not action-based)
+ */
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-primary {
+    border-color: var(--border-light);
+    color: var(--text-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--bg-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Create workshop button (floating action button) */
+.btn-create-workshop {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-create-workshop:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive button sizes */
+@media (max-width: 768px) {
+    .btn-create-workshop {
+        width: 48px;
+        height: 48px;
+        font-size: var(--font-size-lg);
+    }
+}

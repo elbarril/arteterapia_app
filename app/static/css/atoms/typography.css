@@ -1,0 +1,13 @@
+/* Typography Atoms
+ * Base typography styles
+ */
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}

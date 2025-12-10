@@ -1,0 +1,8 @@
+/* Animation Utilities
+ * Transitions and animations
+ */
+
+/* Global transition timing */
+* {
+    transition-timing-function: var(--transition-timing);
+}

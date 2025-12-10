@@ -1,0 +1,13 @@
+/* Badge Atoms
+ * Badge component styles
+ */
+
+.badge {
+    border-radius: 6px;
+    font-weight: var(--font-weight-medium);
+}
+
+.badge.bg-light {
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}

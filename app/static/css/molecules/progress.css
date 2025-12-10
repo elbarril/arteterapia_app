@@ -1,0 +1,13 @@
+/* Progress Molecules
+ * Progress bar styles
+ */
+
+.progress {
+    background-color: var(--border-light);
+    border-radius: var(--radius-sm);
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+    transition: width var(--transition-base) ease;
+}

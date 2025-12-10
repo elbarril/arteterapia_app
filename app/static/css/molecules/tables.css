@@ -1,0 +1,11 @@
+/* Table Molecules
+ * Table styles
+ */
+
+.table {
+    background: var(--bg-white);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bg-light);
+}

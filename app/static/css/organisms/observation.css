@@ -1,0 +1,74 @@
+/* Observation Organism
+ * Observation flow component styles
+ */
+
+/* Observation card */
+.observation-card {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Observation buttons - completed vs pending */
+.observation-btn.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.observation-btn.btn-success:hover {
+    background-color: var(--success-hover);
+    border-color: var(--success-hover);
+    color: white;
+}
+
+.observation-btn .badge {
+    font-size: var(--font-size-sm);
+}
+
+/* Answer buttons */
+.answer-btn {
+    border: 2px solid var(--border-light);
+    transition: all var(--transition-fast) ease;
+    font-weight: var(--font-weight-medium);
+}
+
+.answer-btn:hover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.02);
+}
+
+.answer-btn:active {
+    transform: scale(0.98);
+}
+
+/* Previously answered questions - subtle highlight */
+.answer-btn.previously-answered {
+    border-color: var(--warning-color);
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+    position: relative;
+}
+
+.answer-btn.previously-answered::before {
+    content: "✓ ";
+    font-weight: var(--font-weight-bold);
+}
+
+.answer-btn.previously-answered:hover {
+    border-color: var(--warning-hover);
+    background-color: var(--warning-color);
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .observation-card .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    .answer-btn {
+        padding: var(--spacing-sm);
+    }
+}

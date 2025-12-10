@@ -1,0 +1,7 @@
+/* List Molecules
+ * List group styles
+ */
+
+.list-group-item {
+    border-color: var(--border-light);
+}

@@ -1,0 +1,11 @@
+/* Card Molecules
+ * Card component styles
+ */
+
+.card {
+    border-radius: var(--radius-lg);
+}
+
+.card.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}

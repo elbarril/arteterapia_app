@@ -1,0 +1,9 @@
+/* Form Atoms
+ * Form control styles
+ */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--accent-shadow);
+}

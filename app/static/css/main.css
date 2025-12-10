@@ -1,0 +1,36 @@
+/* Arteterapia Application - Main CSS
+ * Atomic Design Architecture
+ * 
+ * This file imports all CSS modules in the correct order:
+ * 1. Design Tokens (variables)
+ * 2. Atoms (basic elements)
+ * 3. Molecules (simple components)
+ * 4. Organisms (complex components)
+ * 5. Utilities (helpers and overrides)
+ */
+
+/* Design Tokens */
+@import 'tokens/variables.css';
+
+/* Atoms */
+@import 'atoms/typography.css';
+@import 'atoms/buttons.css';
+@import 'atoms/forms.css';
+@import 'atoms/badges.css';
+
+/* Molecules */
+@import 'molecules/cards.css';
+@import 'molecules/modals.css';
+@import 'molecules/lists.css';
+@import 'molecules/tables.css';
+@import 'molecules/progress.css';
+
+/* Organisms */
+@import 'organisms/navbar.css';
+@import 'organisms/workshop.css';
+@import 'organisms/session.css';
+@import 'organisms/observation.css';
+
+/* Utilities */
+@import 'utilities/animations.css';
+@import 'utilities/accessibility.css';
