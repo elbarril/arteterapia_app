@@ -22,18 +22,11 @@
             {% endif %}
             <form method="POST" action="{{ url_for('workshop_bp.delete_workshop', workshop_id=workshop.id) }}"
                 class="d-inline" id="deleteWorkshopForm">
-                <button type="button" class="btn btn-outline-danger" onclick="confirmDeleteWorkshop()">
-                    <i class="bi bi-trash"></i>
+                <button type="submit" class="btn btn-outline-danger" data-action="delete-workshop"
+                    aria-label="Eliminar taller">
+                    <i class="bi bi-trash" aria-hidden="true"></i>
                 </button>
             </form>
-            <script>
-                async function confirmDeleteWorkshop() {
-                    const confirmed = await showModal.confirm('¿Está seguro de eliminar este taller y todos sus datos?');
-                    if (confirmed) {
-                        document.getElementById('deleteWorkshopForm').submit();
-                    }
-                }
-            </script>
         </div>
     </div>
 
@@ -41,7 +34,8 @@
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body">
             <h5 class="card-title text-muted mb-3">Objetivo</h5>
-            <div id="objectiveDisplay" class="objective-display" onclick="editObjective()">
+            <div id="objectiveDisplay" class="objective-display" role="button" tabindex="0"
+                aria-label="Haga clic para editar el objetivo del taller">
                 {% if workshop.objective %}
                 <p class="mb-0">{{ workshop.objective }}</p>
                 {% else %}
@@ -51,8 +45,8 @@
             <div id="objectiveEdit" class="objective-edit d-none">
                 <textarea class="form-control" id="objectiveText" rows="3">{{ workshop.objective or '' }}</textarea>
                 <div class="mt-2">
-                    <button class="btn btn-sm btn-primary" onclick="saveObjective()">Guardar</button>
-                    <button class="btn btn-sm btn-secondary" onclick="cancelEditObjective()">Cancelar</button>
+                    <button class="btn btn-sm btn-primary" data-action="save-objective">Guardar</button>
+                    <button class="btn btn-sm btn-secondary" data-action="cancel-objective">Cancelar</button>
                 </div>
             </div>
         </div>
@@ -68,7 +62,8 @@
                             Participantes <span class="badge bg-secondary" id="participantCount">{{ participants|length
                                 }}</span>
                         </h5>
-                        <button class="btn btn-sm btn-primary" onclick="showAddParticipant()">
+                        <button class="btn btn-sm btn-primary" data-action="show-add-participant"
+                            aria-label="Agregar participante">
                             <i class="bi bi-plus-lg"></i>
                         </button>
                     </div>
@@ -78,8 +73,8 @@
                         <div class="input-group input-group-sm">
                             <input type="text" class="form-control" id="newParticipantName"
                                 placeholder="Nombre del participante">
-                            <button class="btn btn-primary" onclick="createParticipant()">Agregar</button>
-                            <button class="btn btn-secondary" onclick="cancelAddParticipant()">Cancelar</button>
+                            <button class="btn btn-primary" data-action="create-participant">Agregar</button>
+                            <button class="btn btn-secondary" data-action="cancel-add-participant">Cancelar</button>
                         </div>
                     </div>
 
@@ -90,13 +85,16 @@
                             data-participant-id="{{ participant.id }}">
                             <span class="participant-name">{{ participant.name }}</span>
                             <div>
-                                <button class="btn btn-sm btn-link text-muted"
-                                    onclick="editParticipant({{ participant.id }}, '{{ participant.name }}')">
-                                    <i class="bi bi-pencil"></i>
+                                <button class="btn btn-sm btn-link text-muted" data-action="edit-participant"
+                                    data-participant-id="{{ participant.id }}"
+                                    data-participant-name="{{ participant.name }}"
+                                    aria-label="Editar {{ participant.name }}">
+                                    <i class="bi bi-pencil" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn btn-sm btn-link text-danger"
-                                    onclick="deleteParticipant({{ participant.id }})">
-                                    <i class="bi bi-trash"></i>
+                                <button class="btn btn-sm btn-link text-danger" data-action="delete-participant"
+                                    data-participant-id="{{ participant.id }}"
+                                    aria-label="Eliminar {{ participant.name }}">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </li>
@@ -126,7 +124,9 @@
                     <div id="sessionsList">
                         {% for session in sessions %}
                         <div class="session-card mb-3" data-session-id="{{ session.id }}">
-                            <div class="session-card-header" onclick="toggleSession({{ session.id }})">
+                            <div class="session-card-header" role="button" tabindex="0" data-action="toggle-session"
+                                data-session-id="{{ session.id }}" aria-expanded="false"
+                                aria-controls="session{{ session.id }}">
                                 <h6 class="mb-0">{{ session.prompt[:50] }}{% if session.prompt|length > 50 %}...{% endif
                                     %}</h6>
                                 <i class="bi bi-chevron-down session-toggle-icon"></i>
@@ -166,13 +166,13 @@
                                 {% endif %}
 
                                 <div class="mt-2">
-                                    <button class="btn btn-sm btn-link text-muted"
-                                        onclick="editSession({{ session.id }})">
-                                        <i class="bi bi-pencil"></i> Editar
+                                    <button class="btn btn-sm btn-link text-muted" data-action="edit-session"
+                                        data-session-id="{{ session.id }}" aria-label="Editar sesión">
+                                        <i class="bi bi-pencil" aria-hidden="true"></i> Editar
                                     </button>
-                                    <button class="btn btn-sm btn-link text-danger"
-                                        onclick="deleteSession({{ session.id }})">
-                                        <i class="bi bi-trash"></i> Eliminar
+                                    <button class="btn btn-sm btn-link text-danger" data-action="delete-session"
+                                        data-session-id="{{ session.id }}" aria-label="Eliminar sesión">
+                                        <i class="bi bi-trash" aria-hidden="true"></i> Eliminar
                                     </button>
                                 </div>
                             </div>
@@ -212,7 +212,7 @@
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="createSession()">Crear</button>
+                <button type="button" class="btn btn-primary" data-action="create-session">Crear</button>
             </div>
         </div>
     </div>
@@ -243,7 +243,7 @@
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="updateSession()">Guardar</button>
+                <button type="button" class="btn btn-primary" data-action="update-session">Guardar</button>
             </div>
         </div>
     </div>
