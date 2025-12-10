@@ -21,11 +21,19 @@
             </a>
             {% endif %}
             <form method="POST" action="{{ url_for('workshop_bp.delete_workshop', workshop_id=workshop.id) }}"
-                class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar este taller y todos sus datos?')">
-                <button type="submit" class="btn btn-outline-danger">
+                class="d-inline" id="deleteWorkshopForm">
+                <button type="button" class="btn btn-outline-danger" onclick="confirmDeleteWorkshop()">
                     <i class="bi bi-trash"></i>
                 </button>
             </form>
+            <script>
+                async function confirmDeleteWorkshop() {
+                    const confirmed = await showModal.confirm('¿Está seguro de eliminar este taller y todos sus datos?');
+                    if (confirmed) {
+                        document.getElementById('deleteWorkshopForm').submit();
+                    }
+                }
+            </script>
         </div>
     </div>
 

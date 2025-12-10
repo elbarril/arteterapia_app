@@ -147,13 +147,13 @@
                         document.getElementById('notesCard').classList.remove('d-none');
                     }
                 } else {
-                    alert(data.message || 'Error al procesar respuesta');
+                    showModal.alert(data.message || 'Error al procesar respuesta');
                     buttons.forEach(btn => btn.disabled = false);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión');
+                showModal.alert('Error de conexión');
                 buttons.forEach(btn => btn.disabled = false);
             });
     }
@@ -175,12 +175,12 @@
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
-                    alert(data.message || 'Error al guardar');
+                    showModal.alert(data.message || 'Error al guardar');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión');
+                showModal.alert('Error de conexión');
             });
     }
 </script>

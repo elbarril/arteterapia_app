@@ -1,6 +1,102 @@
 // Main JavaScript for Arteterapia Application
 // Handles AJAX interactions for workshop detail view
 
+// ===== Global Modal Helpers =====
+const showModal = {
+    alert: (message, title = 'Mensaje') => {
+        return new Promise((resolve) => {
+            const modalEl = document.getElementById('globalAlertModal');
+            document.getElementById('globalAlertTitle').textContent = title;
+            document.getElementById('globalAlertMessage').textContent = message;
+
+            const modal = new bootstrap.Modal(modalEl);
+
+            const onHidden = () => {
+                modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                resolve();
+            };
+            modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+            modal.show();
+        });
+    },
+    confirm: (message, title = 'Confirmación', confirmBtnText = 'Confirmar', confirmBtnClass = 'btn-danger') => {
+        return new Promise((resolve) => {
+            const modalEl = document.getElementById('globalConfirmModal');
+            document.getElementById('globalConfirmTitle').textContent = title;
+            document.getElementById('globalConfirmMessage').textContent = message;
+
+            const confirmBtn = document.getElementById('globalConfirmBtn');
+            confirmBtn.textContent = confirmBtnText;
+            confirmBtn.className = `btn ${confirmBtnClass}`;
+
+            const modal = new bootstrap.Modal(modalEl);
+            let confirmed = false;
+
+            // Remove existing listeners to prevent duplicates if instance persists
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.onclick = () => {
+                confirmed = true;
+                modal.hide();
+            };
+
+            const onHidden = () => {
+                modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                resolve(confirmed);
+            };
+            modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+            modal.show();
+        });
+    },
+    prompt: (label, defaultValue = '', title = 'Ingresar Datos') => {
+        return new Promise((resolve) => {
+            const modalEl = document.getElementById('globalPromptModal');
+            const input = document.getElementById('globalPromptInput');
+            const confirmBtn = document.getElementById('globalPromptBtn');
+
+            document.getElementById('globalPromptTitle').textContent = title;
+            document.getElementById('globalPromptLabel').textContent = label;
+            input.value = defaultValue;
+
+            const modal = new bootstrap.Modal(modalEl);
+            let value = null;
+
+            // Remove existing listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            // Handle Enter key
+            input.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    newConfirmBtn.click();
+                }
+            };
+
+            // Focus input when modal shown
+            modalEl.addEventListener('shown.bs.modal', () => {
+                input.focus();
+            }, { once: true });
+
+            newConfirmBtn.onclick = () => {
+                value = input.value;
+                modal.hide();
+            };
+
+            const onHidden = () => {
+                modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                resolve(value);
+            };
+            modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+            modal.show();
+        });
+    }
+};
+
 // ===== Objective Management =====
 function editObjective() {
     document.getElementById('objectiveDisplay').classList.add('d-none');
@@ -34,12 +130,12 @@ function saveObjective() {
                 }
                 cancelEditObjective();
             } else {
-                alert('Error al actualizar objetivo');
+                showModal.alert('Error al actualizar objetivo');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
@@ -58,7 +154,7 @@ function createParticipant() {
     const name = document.getElementById('newParticipantName').value.trim();
 
     if (!name) {
-        alert('El nombre es obligatorio');
+        showModal.alert('El nombre es obligatorio');
         return;
     }
 
@@ -101,17 +197,17 @@ function createParticipant() {
 
                 cancelAddParticipant();
             } else {
-                alert(data.message || 'Error al crear participante');
+                showModal.alert(data.message || 'Error al crear participante');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
-function editParticipant(id, currentName) {
-    const newName = prompt('Editar nombre del participante:', currentName);
+async function editParticipant(id, currentName) {
+    const newName = await showModal.prompt('Editar nombre del participante:', currentName);
 
     if (newName && newName.trim() !== currentName) {
         fetch(`/participant/${id}/update`, {
@@ -131,18 +227,19 @@ function editParticipant(id, currentName) {
                     const editBtn = listItem.querySelector('.btn-link:first-child');
                     editBtn.setAttribute('onclick', `editParticipant(${id}, '${data.participant.name}')`);
                 } else {
-                    alert(data.message || 'Error al actualizar');
+                    showModal.alert(data.message || 'Error al actualizar');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión');
+                showModal.alert('Error de conexión');
             });
     }
 }
 
-function deleteParticipant(id) {
-    if (!confirm('¿Eliminar este participante?')) {
+async function deleteParticipant(id) {
+    const confirmed = await showModal.confirm('¿Eliminar este participante?');
+    if (!confirmed) {
         return;
     }
 
@@ -167,12 +264,12 @@ function deleteParticipant(id) {
                     list.innerHTML = '<li class="list-group-item px-0 text-muted fst-italic">No hay participantes</li>';
                 }
             } else {
-                alert(data.message || 'Error al eliminar');
+                showModal.alert(data.message || 'Error al eliminar');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
@@ -190,7 +287,7 @@ function createSession() {
     const materials = document.getElementById('sessionMaterials').value.trim();
 
     if (!prompt) {
-        alert('La consigna es obligatoria');
+        showModal.alert('La consigna es obligatoria');
         return;
     }
 
@@ -211,12 +308,12 @@ function createSession() {
                 // Reload page to show new session
                 location.reload();
             } else {
-                alert(data.message || 'Error al crear sesión');
+                showModal.alert(data.message || 'Error al crear sesión');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
@@ -253,7 +350,7 @@ function updateSession() {
     const materials = document.getElementById('editSessionMaterials').value.trim();
 
     if (!prompt) {
-        alert('La consigna es obligatoria');
+        showModal.alert('La consigna es obligatoria');
         return;
     }
 
@@ -274,17 +371,18 @@ function updateSession() {
                 // Reload page to show updated session
                 location.reload();
             } else {
-                alert(data.message || 'Error al actualizar sesión');
+                showModal.alert(data.message || 'Error al actualizar sesión');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
-function deleteSession(sessionId) {
-    if (!confirm('¿Eliminar esta sesión y todos sus registros?')) {
+async function deleteSession(sessionId) {
+    const confirmed = await showModal.confirm('¿Eliminar esta sesión y todos sus registros?');
+    if (!confirmed) {
         return;
     }
 
@@ -304,12 +402,12 @@ function deleteSession(sessionId) {
                 // Update count
                 document.getElementById('sessionCount').textContent = data.session_count;
             } else {
-                alert(data.message || 'Error al eliminar');
+                showModal.alert(data.message || 'Error al eliminar');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión');
+            showModal.alert('Error de conexión');
         });
 }
 
