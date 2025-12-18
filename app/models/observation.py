@@ -23,7 +23,7 @@ class ObservationalRecord(db.Model):
     # Freeform observation notes
     freeform_notes = db.Column(db.Text, nullable=True)
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(datetime.UTC), nullable=False)
     
     def __repr__(self):
         return f'<ObservationalRecord {self.id} - Session {self.session_id}, Participant {self.participant_id}, v{self.version}>'

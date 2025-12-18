@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     reset_token = db.Column(db.String(100), unique=True, nullable=True)
     reset_token_expiry = db.Column(db.DateTime, nullable=True)
     must_change_password = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(datetime.UTC), nullable=False)
     
     # Relationships
     roles = db.relationship('Role', secondary=user_roles, backref=db.backref('users', lazy='dynamic'))
@@ -56,7 +56,7 @@ class User(UserMixin, db.Model):
     def generate_reset_token(self, expiry_hours=24):
         """Generate a password reset token with expiry."""
         self.reset_token = secrets.token_urlsafe(32)
-        self.reset_token_expiry = datetime.utcnow() + timedelta(hours=expiry_hours)
+        self.reset_token_expiry = datetime.now(datetime.UTC) + timedelta(hours=expiry_hours)
         return self.reset_token
     
     def verify_reset_token(self, token):
@@ -65,7 +65,7 @@ class User(UserMixin, db.Model):
             return False
         if self.reset_token != token:
             return False
-        if datetime.utcnow() > self.reset_token_expiry:
+        if datetime.now(datetime.UTC) > self.reset_token_expiry:
             return False
         return True
     
@@ -86,6 +86,18 @@ class User(UserMixin, db.Model):
     def is_active(self):
         """Required by Flask-Login."""
         return self.active
+    
+    def to_dict(self):
+        """Convert user to dictionary for API responses."""
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'active': self.active,
+            'email_verified': self.email_verified,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'roles': [role.name for role in self.roles]
+        }
     
     def __repr__(self):
         return f'<User {self.username}>'
