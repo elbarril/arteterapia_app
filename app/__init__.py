@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_admin import Admin, AdminIndexView
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager, current_user
+from flask_babel import Babel
 from config import config
 
 # Initialize extensions
@@ -13,6 +14,7 @@ migrate = Migrate()
 admin = Admin(name='Arteterapia Admin', template_mode='bootstrap4')
 bootstrap = Bootstrap5()
 login_manager = LoginManager()
+babel = Babel()
 
 
 # Custom admin index view with authentication check
@@ -39,6 +41,7 @@ def create_app(config_name='default'):
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)
+    babel.init_app(app)
     
     # Initialize Flask-Login
     login_manager.init_app(app)
@@ -68,11 +71,11 @@ def create_app(config_name='default'):
 
     
     # Register blueprints
-    from app.controllers.auth import auth_bp
-    from app.controllers.workshop import workshop_bp
-    from app.controllers.participant import participant_bp
-    from app.controllers.session import session_bp
-    from app.controllers.observation import observation_bp
+    from app.routes.auth import auth_bp
+    from app.routes.workshop import workshop_bp
+    from app.routes.participant import participant_bp
+    from app.routes.session import session_bp
+    from app.routes.observation import observation_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(workshop_bp)

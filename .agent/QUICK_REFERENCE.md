@@ -180,7 +180,7 @@ Answers stored as JSON in `ObservationalRecord.answers` field:
 | Configuration | `config.py`, `.env`, `.env.example`, `babel.cfg` |
 | Entry Points | `run.py`, `setup_db.py` |
 | Models | 9 files in `app/models/` |
-| Controllers | 6 blueprints in `app/controllers/` |
+| Routes | 6 blueprints in `app/routes/` |
 | Templates | ~10 files across `auth/`, `workshop/`, `observation/` |
 | Static | `custom.css` (~330 lines), `app.js` |
 | Admin | `admin_views.py` (7 custom views) |
@@ -192,7 +192,7 @@ Answers stored as JSON in `ObservationalRecord.answers` field:
 1. **Plan** - Identify required changes
 2. **Models** - Update/create models if needed
 3. **Migrate** - Create and apply migrations
-4. **Routes** - Add/modify controller routes
+4. **Routes** - Add/modify route handlers
 5. **Templates** - Update Jinja2 templates
 6. **Test** - Manual browser testing
 7. **Commit** - Granular, descriptive commits

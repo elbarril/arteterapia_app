@@ -84,7 +84,7 @@ arteterapia_app/
 ├── app/                          # Main application package
 │   ├── __init__.py               # Flask application factory
 │   ├── admin_views.py            # Custom Flask-Admin views with security
-│   ├── controllers/              # Route handlers and business logic (Blueprints)
+│   ├── routes/                   # Route handlers and business logic (Blueprints)
 │   │   ├── __init__.py
 │   │   ├── auth.py               # Authentication routes (login, register, etc.)
 │   │   ├── language.py           # Language switcher routes
@@ -147,7 +147,7 @@ arteterapia_app/
 - **`user.py`**: User authentication, password hashing, role checking
 - **`workshop.py`, `session.py`, `participant.py`**: Core entity models
 
-#### Controllers (app/controllers/)
+#### Routes (app/routes/)
 - Each blueprint handles routes for a specific domain
 - Follow RESTful naming conventions where applicable
 - All routes (except auth) require `@login_required` decorator
@@ -562,7 +562,7 @@ print(f"[DEBUG] Variable value: {variable}")  # Appears in console
 2. **Models**: Update/create models in `app/models/`
 3. **Migration**: `flask --app run db migrate -m "Add feature X"`
 4. **Apply**: `flask --app run db upgrade`
-5. **Controller**: Add routes to appropriate blueprint in `app/controllers/`
+5. **Routes**: Add routes to appropriate blueprint in `app/routes/`
 6. **Template**: Create/update templates in `app/templates/`
 7. **Test**: Manual testing in browser
 8. **Commit**: Granular commits with descriptive messages

@@ -105,7 +105,7 @@ http://localhost:8000/demo.html
 arteterapia_app/
 ├── 🌐 app/                    # Backend application
 │   ├── models/                # Database models
-│   ├── controllers/           # Web routes (Jinja2)
+│   ├── routes/                # Web routes (Jinja2)
 │   ├── api/                   # REST API routes (JSON)
 │   ├── services/              # Business logic
 │   ├── templates/             # HTML templates
