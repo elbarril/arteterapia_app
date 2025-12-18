@@ -13,7 +13,7 @@ class UserInvitation(db.Model):
     email = db.Column(db.String(120), nullable=False, index=True)
     token = db.Column(db.String(100), unique=True, nullable=False, index=True)
     created_by_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(datetime.UTC), nullable=False)
     expires_at = db.Column(db.DateTime, nullable=False)
     used_at = db.Column(db.DateTime, nullable=True)
     
@@ -22,26 +22,26 @@ class UserInvitation(db.Model):
         self.email = email
         self.created_by_user_id = created_by_user_id
         self.token = secrets.token_urlsafe(32)
-        self.expires_at = datetime.utcnow() + timedelta(days=expiry_days)
+        self.expires_at = datetime.now(datetime.UTC) + timedelta(days=expiry_days)
     
     def is_valid(self):
         """Check if invitation is valid (not used and not expired)."""
         if self.used_at is not None:
             return False
-        if datetime.utcnow() > self.expires_at:
+        if datetime.now(datetime.UTC) > self.expires_at:
             return False
         return True
     
     def mark_as_used(self):
         """Mark invitation as used."""
-        self.used_at = datetime.utcnow()
+        self.used_at = datetime.now(datetime.UTC)
     
     @property
     def status(self):
         """Get the current status of the invitation."""
         if self.used_at:
             return 'used'
-        if datetime.utcnow() > self.expires_at:
+        if datetime.now(datetime.UTC) > self.expires_at:
             return 'expired'
         return 'pending'
     
