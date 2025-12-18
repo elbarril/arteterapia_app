@@ -43,6 +43,22 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@arteterapia.local')
     MAIL_SUPPRESS_SEND = os.environ.get('MAIL_SUPPRESS_SEND', 'true').lower() == 'true'  # Log to console in dev
+    
+    # JWT Configuration for API authentication
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or SECRET_KEY
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour in seconds
+    JWT_REFRESH_TOKEN_EXPIRES = 2592000  # 30 days in seconds
+    JWT_TOKEN_LOCATION = ['headers']
+    JWT_HEADER_NAME = 'Authorization'
+    JWT_HEADER_TYPE = 'Bearer'
+    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for API tokens
+    
+    # CORS Configuration for frontend development
+    CORS_ENABLED = True  # Always enabled for API routes
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')  # '*' for dev, specific origins for prod
+    
+    # API Configuration
+    API_RATE_LIMIT = os.environ.get('API_RATE_LIMIT', '100 per hour')
 
 
 class DevelopmentConfig(Config):
