@@ -18,9 +18,9 @@ This document provides visual representations of the Arteterapia application arc
 └─────────────────────────────────────────────────────────────────┘
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                       CONTROLLER LAYER                           │
+│                       ROUTE LAYER                                │
 ├─────────────────────────────────────────────────────────────────┤
-│  Flask Blueprints (app/controllers/)                             │
+│  Flask Blueprints (app/routes/)                                  │
 │  ├─ auth_bp         - Authentication (login, register, etc.)    │
 │  ├─ workshop_bp     - Workshop CRUD + listing                   │
 │  ├─ participant_bp  - Participant management                    │
@@ -427,7 +427,7 @@ app/
 ├── __init__.py           ─► Factory pattern, extension init, blueprint registration
 ├── admin_views.py        ─► Centralized admin customization (security, formatting)
 │
-├── controllers/          ─► Domain-based route organization
+├── routes/               ─► Domain-based route organization
 │   ├── auth.py           ─► All authentication routes together
 │   ├── workshop.py       ─► All workshop routes together
 │   └── ...               ─► Separation of concerns

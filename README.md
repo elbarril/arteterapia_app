@@ -308,7 +308,7 @@ arteterapia_app/
 │   │   ├── session.py        # Session entity
 │   │   ├── observation.py    # Observational record entity
 │   │   └── observation_questions.py  # Therapeutic questions
-│   ├── controllers/          # Route handlers (web interface)
+│   ├── routes/               # Route handlers (web interface)
 │   │   ├── workshop.py
 │   │   ├── participant.py
 │   │   ├── session.py

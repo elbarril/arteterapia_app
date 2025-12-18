@@ -68,11 +68,11 @@ def create_app(config_name='default'):
 
     
     # Register blueprints
-    from app.controllers.auth import auth_bp
-    from app.controllers.workshop import workshop_bp
-    from app.controllers.participant import participant_bp
-    from app.controllers.session import session_bp
-    from app.controllers.observation import observation_bp
+    from app.routes.auth import auth_bp
+    from app.routes.workshop import workshop_bp
+    from app.routes.participant import participant_bp
+    from app.routes.session import session_bp
+    from app.routes.observation import observation_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(workshop_bp)
