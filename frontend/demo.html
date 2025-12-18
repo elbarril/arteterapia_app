@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arteterapia Frontend - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .status {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-text {
+            color: #1e293b;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #1e3a8a;
+            line-height: 1.6;
+        }
+
+        .credentials {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .credentials div {
+            margin-bottom: 5px;
+        }
+
+        .credentials div:last-child {
+            margin-bottom: 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎨 Arteterapia Frontend</h1>
+        <p class="subtitle">Interfaz moderna para gestión de talleres terapéuticos</p>
+
+        <div class="status">
+            <div class="status-item">
+                <span class="status-icon">✅</span>
+                <span class="status-text"><strong>Frontend:</strong> Listo para usar</span>
+            </div>
+            <div class="status-item">
+                <span class="status-icon" id="backendStatus">⏳</span>
+                <span class="status-text" id="backendText"><strong>Backend:</strong> Verificando...</span>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn">🚀 Abrir Aplicación</a>
+
+        <div class="info-box">
+            <h3>📋 Credenciales de Prueba</h3>
+            <p>Usa estas credenciales para iniciar sesión:</p>
+            <div class="credentials">
+                <div><strong>Usuario:</strong> admin</div>
+                <div><strong>Contraseña:</strong> admin123</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">Autenticación JWT</div>
+                <div class="feature-desc">Login seguro con tokens</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">Gestión de Talleres</div>
+                <div class="feature-desc">CRUD completo</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <div class="feature-title">Participantes</div>
+                <div class="feature-desc">Administra asistentes</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Responsive</div>
+                <div class="feature-desc">Mobile-friendly</div>
+            </div>
+        </div>
+
+        <div class="info-box" style="margin-top: 30px; background: #fef3c7;">
+            <h3 style="color: #92400e;">⚠️ Requisitos</h3>
+            <p style="color: #78350f;">
+                Asegúrate de que el backend Flask esté ejecutándose en
+                <strong>http://localhost:5000</strong> antes de usar la aplicación.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Check backend status
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'test', password: 'test' })
+                });
+
+                // If we get any response (even 401), backend is running
+                document.getElementById('backendStatus').textContent = '✅';
+                document.getElementById('backendText').innerHTML =
+                    '<strong>Backend:</strong> Conectado y funcionando';
+            } catch (error) {
+                document.getElementById('backendStatus').textContent = '❌';
+                document.getElementById('backendText').innerHTML =
+                    '<strong>Backend:</strong> No disponible. Inicia el servidor Flask.';
+            }
+        }
+
+        checkBackend();
+    </script>
+</body>
+
+</html>
