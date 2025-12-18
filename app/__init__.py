@@ -50,6 +50,15 @@ def create_app(config_name='default'):
     from app.utils.email_utils import mail
     mail.init_app(app)
     
+    # Initialize JWT for API authentication
+    from flask_jwt_extended import JWTManager
+    jwt = JWTManager()
+    jwt.init_app(app)
+    
+    # Initialize CORS for API endpoints only
+    from flask_cors import CORS
+    CORS(app, resources={r"/api/v1/*": {"origins": app.config.get('CORS_ORIGINS', '*')}})
+    
     # User loader for Flask-Login
     @login_manager.user_loader
     def load_user(user_id):
@@ -70,6 +79,10 @@ def create_app(config_name='default'):
     app.register_blueprint(participant_bp)
     app.register_blueprint(session_bp)
     app.register_blueprint(observation_bp)
+    
+    # Register API blueprint
+    from app.api import api_bp
+    app.register_blueprint(api_bp)
     
     # Import models for Flask-Migrate and Flask-Admin
     from app.models.workshop import Workshop

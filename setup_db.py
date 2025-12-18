@@ -57,19 +57,32 @@ def init_database():
     
     # Check if migrations directory exists
     migrations_dir = 'migrations'
+    migrations_versions_dir = os.path.join(migrations_dir, 'versions')
+    
+    # Check if we have any migration files
+    has_migrations = False
+    if os.path.exists(migrations_versions_dir):
+        migration_files = [f for f in os.listdir(migrations_versions_dir) if f.endswith('.py')]
+        has_migrations = len(migration_files) > 0
+    
     if not os.path.exists(migrations_dir):
         print("Migrations directory not found. Creating...")
         migrate_init()
         print("✓ Migrations directory created")
     
-    # Apply all migrations
-    print("Applying migrations...")
-    try:
-        upgrade()
-        print("✓ Database migrations applied successfully")
-    except Exception as e:
-        print(f"Error applying migrations: {e}")
-        print("Creating all tables directly...")
+    # If we have migrations, apply them; otherwise create tables directly
+    if has_migrations:
+        print("Applying migrations...")
+        try:
+            upgrade()
+            print("✓ Database migrations applied successfully")
+        except Exception as e:
+            print(f"Error applying migrations: {e}")
+            print("Creating all tables directly...")
+            db.create_all()
+            print("✓ All tables created")
+    else:
+        print("No migration files found. Creating all tables directly...")
         db.create_all()
         print("✓ All tables created")
     
@@ -178,7 +191,7 @@ def create_sample_data(admin_user):
             name=w_data['name'],
             objective=w_data['objective'],
             user_id=admin_user.id,
-            created_at=datetime.utcnow() - timedelta(days=30-idx*5)
+            created_at=datetime.now(datetime.UTC) - timedelta(days=30-idx*5)
         )
         db.session.add(workshop)
         workshops.append(workshop)

@@ -21,6 +21,7 @@ This documentation contains essential context including architecture, security g
 
 ## Features
 
+### Core Functionality
 - **Workshop Management**: Create and manage art therapy workshops with objectives
 - **Participant Tracking**: Add and manage participants for each workshop
 - **Session Planning**: Define sessions with prompts, motivations, and materials
@@ -29,14 +30,57 @@ This documentation contains essential context including architecture, security g
 - **Admin Interface**: Full CRUD operations for internal testing and data correction
 - **Database Portability**: SQLAlchemy + Alembic for easy database migration
 
+### Dual Architecture
+- **Web Interface**: Traditional server-side rendered pages with Jinja2 templates
+- **RESTful API**: JSON API with JWT authentication for external integrations
+- **Frontend SPA**: Modern single-page application built with vanilla JavaScript
+- **Service Layer**: Shared business logic between web and API endpoints
+- **CORS Support**: Ready for frontend frameworks (React, Vue, Angular, mobile apps)
+
+### Frontend SPA (New!)
+
+A complete **vanilla JavaScript frontend** is now available in the `frontend/` directory:
+
+- ✅ **Zero Dependencies**: Pure JavaScript, no frameworks required
+- ✅ **JWT Authentication**: Secure login with automatic token refresh
+- ✅ **Full CRUD**: Workshops and participants management
+- ✅ **Responsive Design**: Works on desktop and mobile
+- ✅ **Modern UI**: Toast notifications, modals, and smooth animations
+
+**Quick Start:**
+```bash
+# Start the backend first
+python run.py
+
+# In a new terminal, start the frontend
+cd frontend
+python -m http.server 8000
+
+# Open browser at http://localhost:8000/demo.html
+```
+
+See `frontend/README.md` for complete documentation.
+
 ## Technology Stack
 
-- **Backend**: Flask 3.0
+### Backend
+- **Framework**: Flask 3.0
 - **Database**: SQLAlchemy ORM with SQLite (development) / PostgreSQL or MySQL ready
 - **Migrations**: Flask-Migrate (Alembic)
 - **Admin**: Flask-Admin
-- **Frontend**: Bootstrap 5 + Custom minimalist CSS
+- **API Auth**: Flask-JWT-Extended (JWT tokens)
+- **CORS**: Flask-CORS
+
+### Frontend
+- **Templates**: Jinja2 with Bootstrap 5
+- **Styling**: Custom minimalist CSS
 - **JavaScript**: Vanilla JS with AJAX for dynamic interactions
+
+### API
+- **Format**: RESTful JSON API
+- **Version**: v1 (`/api/v1/`)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Documentation**: See `.agent/docs/TESTING.md` for API testing guide
 
 ## Installation
 
@@ -264,11 +308,20 @@ arteterapia_app/
 │   │   ├── session.py        # Session entity
 │   │   ├── observation.py    # Observational record entity
 │   │   └── observation_questions.py  # Therapeutic questions
-│   ├── controllers/          # Route handlers and business logic
+│   ├── controllers/          # Route handlers (web interface)
 │   │   ├── workshop.py
 │   │   ├── participant.py
 │   │   ├── session.py
 │   │   └── observation.py
+│   ├── api/                  # RESTful API endpoints
+│   │   ├── __init__.py       # API blueprint (v1)
+│   │   ├── auth.py           # JWT authentication
+│   │   ├── workshops.py      # Workshop API
+│   │   ├── participants.py   # Participant API
+│   │   └── decorators.py     # JWT decorators
+│   ├── services/             # Business logic layer
+│   │   ├── workshop_service.py
+│   │   └── participant_service.py
 │   ├── templates/            # Jinja2 templates
 │   │   ├── base.html
 │   │   ├── workshop/
@@ -278,8 +331,37 @@ arteterapia_app/
 │       │   └── custom.css    # Minimalist design
 │       └── js/
 │           └── app.js        # AJAX interactions
+├── frontend/                 # Vanilla JS SPA (NEW!)
+│   ├── index.html            # Main application
+│   ├── demo.html             # Demo landing page
+│   ├── README.md             # Frontend documentation
+│   ├── start-server.bat      # Windows launcher
+│   ├── start-server.sh       # Unix launcher
+│   ├── css/
+│   │   └── styles.css        # Complete design system
+│   └── js/
+│       ├── config.js         # API configuration
+│       ├── api.js            # HTTP client
+│       ├── auth.js           # Authentication
+│       ├── ui.js             # UI utilities
+│       ├── workshops.js      # Workshop management
+│       ├── participants.js   # Participant management
+│       └── app.js            # Main entry point
+├── tests/                    # Test suite
+│   ├── conftest.py           # Pytest configuration
+│   └── api/                  # API tests
+│       ├── test_auth.py
+│       ├── test_workshops.py
+│       └── test_participants.py
+├── .agent/                   # Agent documentation
+│   ├── docs/                 # Additional documentation
+│   │   ├── API.md            # API reference
+│   │   ├── TESTING.md        # Testing guide
+│   │   └── FRONTEND.md       # Frontend documentation
+│   └── workflows/            # Development workflows
 ├── config.py                 # Configuration
 ├── requirements.txt          # Dependencies
+├── pytest.ini                # Test configuration
 └── run.py                    # Application entry point
 ```
 
@@ -312,6 +394,72 @@ From the workshop detail view, you can:
 ### Viewing Consolidated Observations
 
 From the workshop detail page, click "Ver registros" to view all observations in a table format with answers organized by category.
+
+## API Usage
+
+### Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication:
+
+```bash
+# Login to get JWT token
+curl -X POST http://localhost:5000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# Response:
+{
+  "access_token": "eyJhbGci...",
+  "refresh_token": "eyJhbGci...",
+  "user": {...}
+}
+```
+
+### API Endpoints
+
+**Authentication:**
+- `POST /api/v1/auth/login` - Login and get JWT tokens
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `GET /api/v1/auth/me` - Get current user info
+
+**Workshops:**
+- `GET /api/v1/workshops` - List all workshops
+- `POST /api/v1/workshops` - Create new workshop
+- `GET /api/v1/workshops/{id}` - Get workshop details
+- `PATCH /api/v1/workshops/{id}` - Update workshop
+- `DELETE /api/v1/workshops/{id}` - Delete workshop
+
+**Participants:**
+- `GET /api/v1/participants/workshop/{id}` - List workshop participants
+- `POST /api/v1/participants` - Create new participant
+- `GET /api/v1/participants/{id}` - Get participant details
+- `PATCH /api/v1/participants/{id}` - Update participant
+- `DELETE /api/v1/participants/{id}` - Delete participant
+
+### Example API Call
+
+```bash
+# Get all workshops (with authentication)
+curl http://localhost:5000/api/v1/workshops \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### API Testing
+
+Run the comprehensive test suite:
+
+```bash
+# Run all API tests
+pytest tests/api/ -v
+
+# Run specific test file
+pytest tests/api/test_workshops.py -v
+
+# Run with coverage
+pytest tests/api/ --cov=app --cov-report=html
+```
+
+See `.agent/docs/TESTING.md` for detailed testing documentation.
 
 ## Observational Categories
 
@@ -347,6 +495,22 @@ set FLASK_ENV=development     # Windows
 python run.py
 ```
 
+### Running Tests
+
+```bash
+# Install test dependencies (if not already installed)
+pip install pytest pytest-flask
+
+# Run all tests
+pytest
+
+# Run API tests only
+pytest tests/api/ -v
+
+# Run with coverage report
+pytest --cov=app --cov-report=html
+```
+
 ### Creating Database Migrations
 
 After modifying models:
@@ -355,6 +519,14 @@ After modifying models:
 flask --app run db migrate -m "Description of changes"
 flask --app run db upgrade
 ```
+
+### API Development
+
+The API follows RESTful conventions:
+- All API endpoints are under `/api/v1/`
+- JWT authentication required for protected endpoints
+- Service layer contains shared business logic
+- CORS enabled for frontend development
 
 ## Design Philosophy
 
