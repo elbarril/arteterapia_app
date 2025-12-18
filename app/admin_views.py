@@ -298,13 +298,13 @@ class UserInvitationAdminView(SecureModelView):
     column_sortable_list = ['id', 'email', 'created_at', 'expires_at']
     
     # Don't allow editing token directly
-    form_excluded_columns = ['token', 'used_at', 'created_by_user_id']
+    form_excluded_columns = ['token', 'used_at', 'created_by_user_id', 'created_at', 'expires_at']
     
     # Only show email field on create, everything else is auto-generated
     form_create_rules = ['email']
     
-    # On edit, show all non-excluded fields as read-only except email
-    form_edit_rules = ['email', 'created_at', 'expires_at']
+    # On edit, show only email (all other fields are auto-generated or read-only)
+    form_edit_rules = ['email']
     
     # Make fields read-only in edit form
     form_widget_args = {
@@ -359,7 +359,7 @@ class UserInvitationAdminView(SecureModelView):
             # Set expiry if not set (7 days from now)
             if not model.expires_at:
                 expiry_days = current_app.config.get('INVITATION_EXPIRY_DAYS', 7)
-                model.expires_at = datetime.utcnow() + timedelta(days=expiry_days)
+                model.expires_at = datetime.now(datetime.UTC) + timedelta(days=expiry_days)
             
             # Send invitation email after commit
             db.session.flush()
