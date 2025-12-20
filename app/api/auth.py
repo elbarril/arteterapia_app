@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 )
 from app.models.user import User
 from app.api.decorators import jwt_required_api
+from app.services.auth_service import AuthService
 
 auth_api_bp = Blueprint('auth_api', __name__, url_prefix='/auth')
 
@@ -28,22 +29,11 @@ def api_login():
     username = data.get('username')
     password = data.get('password')
     
-    if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
+    # Use AuthService for authentication
+    user, error = AuthService.authenticate_user(username, password)
     
-    # Find user by username or email
-    user = User.query.filter(
-        (User.username == username) | (User.email == username)
-    ).first()
-    
-    if not user or not user.check_password(password):
-        return jsonify({'error': 'Invalid credentials'}), 401
-    
-    if not user.active:
-        return jsonify({'error': 'Account is not active'}), 403
-    
-    if not user.email_verified:
-        return jsonify({'error': 'Email not verified'}), 403
+    if error:
+        return jsonify({'error': error}), 401
     
     # Create JWT tokens
     access_token = create_access_token(identity=str(user.id))
@@ -83,9 +73,42 @@ def api_current_user():
     Response: {"id": 1, "username": "...", ...}
     """
     user_id = get_jwt_identity()
-    user = User.query.get(int(user_id))  # Convert back to int for query
+    user = User.query.get(int(user_id))
     
     if not user:
         return jsonify({'error': 'User not found'}), 404
     
     return jsonify(user.to_dict()), 200
+
+
+@auth_api_bp.route('/change-password', methods=['POST'])
+@jwt_required_api
+def api_change_password():
+    """
+    Change password for authenticated user.
+    
+    Request: {"current_password": "...", "new_password": "...", "new_password_confirm": "..."}
+    Response: {"message": "Password changed successfully"}
+    """
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({'error': 'Invalid request format'}), 400
+    
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    new_password_confirm = data.get('new_password_confirm')
+    
+    # Use AuthService for password change
+    success, error = AuthService.change_password(
+        user_id,
+        current_password,
+        new_password,
+        new_password_confirm
+    )
+    
+    if not success:
+        return jsonify({'error': error}), 400
+    
+    return jsonify({'message': 'Password changed successfully'}), 200
