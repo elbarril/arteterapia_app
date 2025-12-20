@@ -1,11 +1,8 @@
 """Observation controller."""
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, session as flask_session
+from flask_login import login_required, current_user
 
-from flask_login import login_required
-from app import db
-from app.models.session import Session
-from app.models.participant import Participant
-from app.models.observation import ObservationalRecord
+from app.services.observation_service import ObservationService
 from app.models.observation_questions import (
     get_all_questions, get_question_by_index, get_total_question_count,
     ANSWER_OPTIONS, OBSERVATION_CATEGORIES
@@ -18,32 +15,29 @@ observation_bp = Blueprint('observation_bp', __name__)
 @login_required
 def start_observation(session_id, participant_id):
     """Start the observational record flow."""
-    session_obj = Session.query.get_or_404(session_id)
-    participant = Participant.query.get_or_404(participant_id)
+    # Use service to initialize observation
+    observation_data, error = ObservationService.initialize_observation(
+        session_id,
+        participant_id,
+        current_user.id
+    )
     
-    # Verify participant belongs to same workshop as session
-    if participant.workshop_id != session_obj.workshop_id:
-        return redirect(url_for('workshop_bp.detail', workshop_id=session_obj.workshop_id))
+    if error:
+        # Get session to redirect to workshop
+        from app.models.session import Session
+        session_obj = Session.query.get(session_id)
+        if session_obj:
+            return redirect(url_for('workshop_bp.detail', workshop_id=session_obj.workshop_id))
+        return redirect(url_for('workshop_bp.list_workshops'))
     
-    # Check for existing observations and get the latest one
-    latest_observation = ObservationalRecord.query.filter_by(
-        session_id=session_id,
-        participant_id=participant_id
-    ).order_by(ObservationalRecord.version.desc()).first()
+    # Store observation data in Flask session
+    flask_session['observation_data'] = observation_data
     
-    # Pre-fill answers from latest observation if it exists
-    previous_answers = latest_observation.answers if latest_observation else {}
-    is_redo = latest_observation is not None
-    
-    # Initialize session data
-    flask_session['observation_data'] = {
-        'session_id': session_id,
-        'participant_id': participant_id,
-        'answers': previous_answers.copy(),  # Start with previous answers
-        'current_index': 0,
-        'is_redo': is_redo,
-        'previous_version': latest_observation.version if latest_observation else 0
-    }
+    # Get session and participant for template
+    from app.models.session import Session
+    from app.models.participant import Participant
+    session_obj = Session.query.get(session_id)
+    participant = Participant.query.get(participant_id)
     
     # Get first question
     first_question = get_question_by_index(0)
@@ -56,8 +50,8 @@ def start_observation(session_id, participant_id):
         question_index=0,
         total_questions=get_total_question_count(),
         answer_options=ANSWER_OPTIONS,
-        is_redo=is_redo,
-        previous_answers=previous_answers
+        is_redo=observation_data['is_redo'],
+        previous_answers=observation_data['answers']
     )
 
 
@@ -72,10 +66,14 @@ def process_answer():
     if 'observation_data' not in flask_session:
         return jsonify({'success': False, 'message': 'Sesión expirada'}), 400
     
-    # Store answer
+    # Use service to process answer
     obs_data = flask_session['observation_data']
-    obs_data['answers'][question_id] = answer
-    obs_data['current_index'] += 1
+    obs_data = ObservationService.process_answer(obs_data, question_id, answer)
+    
+    if not obs_data:
+        return jsonify({'success': False, 'message': 'Error procesando respuesta'}), 400
+    
+    # Update Flask session
     flask_session['observation_data'] = obs_data
     
     # Check if there are more questions
@@ -118,24 +116,21 @@ def complete_observation():
     
     obs_data = flask_session['observation_data']
     
-    # Calculate the next version number
-    next_version = obs_data.get('previous_version', 0) + 1
-    
-    # Create observational record with version
-    record = ObservationalRecord(
-        session_id=obs_data['session_id'],
-        participant_id=obs_data['participant_id'],
-        answers=obs_data['answers'],
-        freeform_notes=freeform_notes if freeform_notes else None,
-        version=next_version
+    # Use service to save observation
+    record, error = ObservationService.save_observation(
+        obs_data,
+        freeform_notes,
+        current_user.id
     )
-    db.session.add(record)
-    db.session.commit()
+    
+    if error:
+        return jsonify({'success': False, 'message': error}), 400
     
     # Clear session data
     flask_session.pop('observation_data', None)
     
     # Get workshop ID for redirect
+    from app.models.session import Session
     session_obj = Session.query.get(obs_data['session_id'])
     
     return jsonify({
@@ -149,16 +144,20 @@ def complete_observation():
 @login_required
 def view_observations(workshop_id):
     """Display consolidated observation table for a workshop."""
+    # Use service to get observations
+    observations, error = ObservationService.get_workshop_observations(
+        workshop_id,
+        current_user.id
+    )
+    
+    if error:
+        from flask import flash
+        flash(error, 'danger')
+        return redirect(url_for('workshop_bp.list_workshops'))
+    
+    # Get workshop for template
     from app.models.workshop import Workshop
-    
-    workshop = Workshop.query.get_or_404(workshop_id)
-    
-    # Get all observations for sessions in this workshop
-    observations = db.session.query(ObservationalRecord).join(
-        ObservationalRecord.session
-    ).filter(
-        Session.workshop_id == workshop_id
-    ).order_by(ObservationalRecord.created_at.desc()).all()
+    workshop = Workshop.query.get(workshop_id)
     
     # Get all questions for table headers
     all_questions = get_all_questions()

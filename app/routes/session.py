@@ -1,10 +1,8 @@
 """Session controller."""
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
 
-from flask_login import login_required
-from app import db
-from app.models.session import Session
-from app.models.workshop import Workshop
+from app.services.session_service import SessionService
 
 session_bp = Blueprint('session_bp', __name__)
 
@@ -13,30 +11,32 @@ session_bp = Blueprint('session_bp', __name__)
 @login_required
 def create_session(workshop_id):
     """Create a new session for a workshop (AJAX)."""
-    workshop = Workshop.query.get_or_404(workshop_id)
-    
     data = request.get_json()
     prompt = data.get('prompt', '').strip()
     motivation = data.get('motivation', '').strip()
     materials_raw = data.get('materials', '').strip()
     
+    # Validation
     if not prompt:
         return jsonify({
             'success': False,
             'message': 'La consigna es obligatoria'
         }), 400
     
-    # Parse materials as comma-separated list
-    materials = [m.strip() for m in materials_raw.split(',') if m.strip()] if materials_raw else []
-    
-    session = Session(
+    # Use service to create session (includes permission check)
+    session = SessionService.create_session(
         workshop_id=workshop_id,
+        user_id=current_user.id,
         prompt=prompt,
         motivation=motivation or None,
-        materials=materials if materials else None
+        materials=materials_raw
     )
-    db.session.add(session)
-    db.session.commit()
+    
+    if not session:
+        return jsonify({
+            'success': False,
+            'message': 'Taller no encontrado o sin permiso'
+        }), 404
     
     return jsonify({
         'success': True,
@@ -48,7 +48,7 @@ def create_session(workshop_id):
             'materials': session.materials,
             'observation_count': session.observation_count
         },
-        'session_count': workshop.session_count
+        'session_count': session.workshop.session_count
     })
 
 
@@ -56,26 +56,32 @@ def create_session(workshop_id):
 @login_required
 def update_session(session_id):
     """Update a session (AJAX)."""
-    session = Session.query.get_or_404(session_id)
-    
     data = request.get_json()
     prompt = data.get('prompt', '').strip()
-    motivation = data.get('motivation', '').strip()
-    materials_raw = data.get('materials', '').strip()
     
+    # Validation
     if not prompt:
         return jsonify({
             'success': False,
             'message': 'La consigna es obligatoria'
         }), 400
     
-    # Parse materials as comma-separated list
-    materials = [m.strip() for m in materials_raw.split(',') if m.strip()] if materials_raw else []
+    # Use service to update session (includes permission check)
+    session = SessionService.update_session(
+        session_id=session_id,
+        user_id=current_user.id,
+        data={
+            'prompt': prompt,
+            'motivation': data.get('motivation', '').strip() or None,
+            'materials': data.get('materials', '').strip()
+        }
+    )
     
-    session.prompt = prompt
-    session.motivation = motivation or None
-    session.materials = materials if materials else None
-    db.session.commit()
+    if not session:
+        return jsonify({
+            'success': False,
+            'message': 'Sesión no encontrada o sin permiso'
+        }), 404
     
     return jsonify({
         'success': True,
@@ -94,16 +100,24 @@ def update_session(session_id):
 @login_required
 def delete_session(session_id):
     """Delete a session (AJAX)."""
-    session = Session.query.get_or_404(session_id)
-    workshop_id = session.workshop_id
+    # Use service to delete session (includes permission check)
+    result = SessionService.delete_session(
+        session_id=session_id,
+        user_id=current_user.id
+    )
     
-    db.session.delete(session)
-    db.session.commit()
+    if not result:
+        return jsonify({
+            'success': False,
+            'message': 'Sesión no encontrada o sin permiso'
+        }), 404
     
-    workshop = Workshop.query.get(workshop_id)
+    # Get workshop for session count
+    from app.models.workshop import Workshop
+    workshop = Workshop.query.get(result['workshop_id'])
     
     return jsonify({
         'success': True,
         'message': 'Sesión eliminada',
-        'session_count': workshop.session_count
+        'session_count': workshop.session_count if workshop else 0
     })
