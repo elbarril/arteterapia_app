@@ -13,7 +13,7 @@ Usage:
 import os
 import sys
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask_migrate import upgrade, init as migrate_init
 from app import create_app, db
 from app.models.user import User
@@ -191,7 +191,7 @@ def create_sample_data(admin_user):
             name=w_data['name'],
             objective=w_data['objective'],
             user_id=admin_user.id,
-            created_at=datetime.now(datetime.UTC) - timedelta(days=30-idx*5)
+            created_at=datetime.now(timezone.utc) - timedelta(days=30-idx*5)
         )
         db.session.add(workshop)
         workshops.append(workshop)

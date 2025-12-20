@@ -39,7 +39,17 @@ Email:    Flask-Mail
 | `config.py` | Configuration (Dev/Prod) |
 | `app/__init__.py` | Flask factory, blueprints, extensions |
 | `app/models/observation_questions.py` | **CRITICAL**: Question structure (~50 questions) |
-| `app/static/css/custom.css` | Minimalist design system | `setup_db.py` | Database initialization |
+| `app/static/css/custom.css` | Minimalist design system |
+| `setup_db.py` | Database initialization |
+| `CHANGELOG.md` | **UPDATE REQUIRED**: Track all changes here |
+
+## Topic Documentation
+
+- **Backend**: `.agent/topics/backend.md` - Flask routes, services, models, Jinja2 templates
+- **Frontend**: `.agent/topics/frontend.md` - Jinja2 templates (primary), SPA (secondary)
+- **API**: `.agent/topics/api.md` - REST API endpoints and JWT authentication
+- **Testing**: `.agent/topics/testing.md` - Test structure and coverage
+- **Routes**: `.agent/topics/routes.md` - Complete route documentation
 
 ## Routes Map
 
@@ -90,19 +100,37 @@ Password: admin123
 
 ### Setup
 ```bash
+# Create virtual environment
 python -m venv .venv
-.venv\Scripts\activate          # Windows
-source .venv/bin/activate       # macOS/Linux
+
+# Activate (Windows)
+.venv\Scripts\activate
+# OR (macOS/Linux)
+source .venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Setup database with sample data
 python setup_db.py --with-data
+
+# Run application
 python run.py
 ```
 
 ### Database
 ```bash
-python setup_db.py --reset --with-data    # Reset with sample data
-flask --app run db migrate -m "Message"   # Create migration
-flask --app run db upgrade                # Apply migration
+# Reset with sample data (venv activated)
+python setup_db.py --reset --with-data
+
+# OR without activating (Windows)
+.\.venv\Scripts\python.exe setup_db.py --reset --with-data
+
+# Create migration (venv activated)
+flask --app run db migrate -m "Message"
+
+# Apply migration (venv activated)
+flask --app run db upgrade
 ```
 
 ### Top Flask CLI Commands
@@ -237,7 +265,8 @@ Answers stored as JSON in `ObservationalRecord.answers`:
 4. **Routes** - Add/modify route handlers
 5. **Templates** - Update Jinja2 templates
 6. **Test** - Manual browser testing
-7. **Commit** - Granular, descriptive commits
+7. **Changelog** - Add entry to `CHANGELOG.md` under `[Unreleased]`
+8. **Commit** - Granular, descriptive commits
 
 ## Workflow Shortcuts
 
@@ -245,22 +274,75 @@ Answers stored as JSON in `ObservationalRecord.answers`:
 - `/modify-models` - Database model changes
 - `/reset-database` - Database reset
 
-## Virtual Environment (CRITICAL)
+## Virtual Environment (⚠️ CRITICAL - READ FIRST)
 
-Always activate virtual environment before running commands:
+**MANDATORY: ALL Python commands and scripts MUST be executed within the virtual environment.**
+
+### Why This Is Critical
+
+- ✅ Ensures correct Python version and dependencies
+- ✅ Prevents compatibility issues (e.g., `datetime.UTC` requires Python 3.11+)
+- ✅ Avoids conflicts with system Python packages
+- ✅ Maintains consistent development environment
+
+### How to Run Commands
 
 **Windows PowerShell:**
 ```bash
-.\.venv\Scripts\Activate.ps1; python script.py
-# OR
+# Direct execution (RECOMMENDED)
 .\.venv\Scripts\python.exe script.py
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe setup_db.py --reset
+
+# OR activate first
+.\.venv\Scripts\Activate.ps1
+python script.py
 ```
 
 **Unix/macOS:**
 ```bash
-source .venv/bin/activate && python script.py
-# OR
+# Direct execution (RECOMMENDED)
 .venv/bin/python script.py
+.venv/bin/python -m pytest
+.venv/bin/python setup_db.py --reset
+
+# OR activate first
+source .venv/bin/activate
+python script.py
+```
+
+### Examples: Right vs Wrong
+
+❌ **WRONG:**
+```bash
+python setup_db.py --reset
+pytest
+flask --app run database init
+```
+
+✅ **CORRECT:**
+```bash
+.\.venv\Scripts\python.exe setup_db.py --reset
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\Activate.ps1; flask --app run database init
+```
+
+### Common Commands with venv
+
+```bash
+# Database setup
+.\.venv\Scripts\python.exe setup_db.py --reset --with-data
+
+# Run tests
+.\.venv\Scripts\python.exe -m pytest
+
+# Run application
+.\.venv\Scripts\python.exe run.py
+
+# Flask CLI (activate first)
+.\.venv\Scripts\Activate.ps1
+flask --app run database stats
+flask --app run users list
 ```
 
 ## Configuration Flags

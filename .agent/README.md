@@ -95,6 +95,60 @@ Some workflows include `// turbo` annotations indicating steps safe to auto-run.
 - Environment issues → workflows/setup-environment.md
 - Testing data → workflows/reset-database.md
 
+## Changelog Management
+
+**IMPORTANT: All code changes MUST be documented in the root `CHANGELOG.md` file.**
+
+### When to Update Changelog
+
+Update `CHANGELOG.md` after:
+- Implementing new features
+- Fixing bugs
+- Modifying existing functionality
+- Updating dependencies or configuration
+- Refactoring code
+- Changing database models
+- Adding/modifying routes or API endpoints
+
+### How to Update Changelog
+
+1. **Open** `CHANGELOG.md` in the project root
+2. **Add entry** under the `[Unreleased]` section
+3. **Use appropriate category:**
+   - `Added` - New features
+   - `Changed` - Changes to existing functionality
+   - `Deprecated` - Soon-to-be removed features
+   - `Removed` - Removed features
+   - `Fixed` - Bug fixes
+   - `Security` - Security improvements
+
+4. **Write clear entries:**
+   - Start with a verb (Added, Fixed, Updated, etc.)
+   - Be specific about what changed
+   - Include relevant component names
+   - Keep it user-focused
+
+### Examples
+
+```markdown
+### Added
+- New observation service for automatic record creation
+- JWT authentication support for API endpoints
+
+### Changed
+- Updated session routes to use service layer pattern
+- Refactored observation questions structure
+
+### Fixed
+- Resolved datetime UTC compatibility issue in setup_db.py
+- Fixed cascade delete behavior for session-observation relationships
+```
+
+### DO NOT Create Implementation Summaries
+
+**Agents should NOT create separate implementation summary documents.**
+Instead, all changes should be tracked in `CHANGELOG.md` as described above.
+
 ## Maintenance
 
 **When to update documentation:**

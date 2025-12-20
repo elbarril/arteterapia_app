@@ -345,7 +345,7 @@ class UserInvitationAdminView(SecureModelView):
         if is_created:
             from flask_login import current_user
             from flask import current_app
-            from datetime import datetime, timedelta
+            from datetime import datetime, timedelta, timezone
             from app import db
             import secrets
             
@@ -359,7 +359,7 @@ class UserInvitationAdminView(SecureModelView):
             # Set expiry if not set (7 days from now)
             if not model.expires_at:
                 expiry_days = current_app.config.get('INVITATION_EXPIRY_DAYS', 7)
-                model.expires_at = datetime.now(datetime.UTC) + timedelta(days=expiry_days)
+                model.expires_at = datetime.now(timezone.utc) + timedelta(days=expiry_days)
             
             # Send invitation email after commit
             db.session.flush()

@@ -14,7 +14,7 @@ Available commands:
 """
 import click
 from flask import current_app
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import secrets
 import os
 import shutil
@@ -537,7 +537,7 @@ def register_cli_commands(app):
     @admin.command('cleanup-invitations')
     def cleanup_invitations():
         """Remove expired and used invitations."""
-        now = datetime.now(datetime.UTC)
+        now = datetime.now(timezone.utc)
         
         # Find expired invitations
         expired = UserInvitation.query.filter(
@@ -650,7 +650,7 @@ def _create_sample_data(admin_user, num_workshops=3):
             name=w_data['name'],
             objective=w_data['objective'],
             user_id=admin_user.id,
-            created_at=datetime.now(datetime.UTC) - timedelta(days=30-i*5)
+            created_at=datetime.now(timezone.utc) - timedelta(days=30-i*5)
         )
         db.session.add(workshop)
         workshops.append(workshop)

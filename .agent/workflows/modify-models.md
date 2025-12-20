@@ -88,6 +88,19 @@ python run.py
 - Check Flask-Admin panel
 - Verify relationships work correctly
 
+### 12. Update Changelog
+Add an entry to `CHANGELOG.md` under the `[Unreleased]` section:
+```markdown
+### Changed
+- Updated [ModelName] to include [description of change]
+```
+
+Or if adding a new model:
+```markdown
+### Added
+- New [ModelName] model for [purpose]
+```
+
 ## Important Notes
 
 ### Avoiding Data Loss

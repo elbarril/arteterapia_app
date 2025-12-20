@@ -2,11 +2,240 @@
 
 ## Overview
 
-The Arteterapia application supports a modern vanilla JavaScript frontend that consumes the REST API. The frontend provides a complete single-page application (SPA) for workshop management.
+The Arteterapia application has **two frontend implementations**:
 
-**Location**: `frontend/` directory
-**Technology**: Vanilla JS + CSS (no frameworks)
-**Browser Support**: Chrome 90+, Firefox 88+, Edge 90+, Safari 14+
+1. **Primary: Jinja2 Templates + AJAX** (in `app/templates/` and `app/static/`)
+   - Server-rendered templates with Bootstrap 5
+   - AJAX interactions for dynamic updates
+   - Integrated with Flask backend
+   - **This is the main production interface**
+
+2. **Secondary: Standalone SPA** (in `frontend/` directory)
+   - Vanilla JavaScript single-page application
+   - Consumes the REST API
+   - Independent deployment option
+   - **Alternative interface for API demonstration**
+
+This guide covers both implementations, with **priority given to the Jinja2 template system**.
+
+---
+
+## Part 1: Jinja2 Templates (Primary Frontend)
+
+### Architecture
+
+**Location**: `app/templates/` and `app/static/`
+
+**Technology Stack:**
+- **Templates**: Jinja2 (Flask's template engine)
+- **CSS**: Bootstrap 5 + Custom CSS (`app/static/css/custom.css`)
+- **JavaScript**: Vanilla JS + AJAX (`app/static/js/app.js`)
+- **Icons**: Bootstrap Icons
+
+### Template Structure
+
+```
+app/templates/
+├── base.html              # Master template
+├── auth/
+│   ├── login.html
+│   ├── register.html
+│   ├── forgot_password.html
+│   └── reset_password.html
+├── workshop/
+│   ├── list.html          # Workshop list page
+│   └── detail.html        # Workshop detail with participants & sessions
+└── observation/
+    ├── create.html        # Observation workflow
+    └── table.html         # Consolidated observation table
+```
+
+### Base Template Pattern
+
+All templates extend `base.html`:
+
+```jinja2
+{% extends "base.html" %}
+
+{% block title %}Page Title - Arteterapia{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Your content here -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Page-specific JavaScript
+</script>
+{% endblock %}
+```
+
+### AJAX Interaction Pattern
+
+The primary frontend uses AJAX for dynamic updates without page reloads:
+
+**Example: Creating a Participant**
+
+```javascript
+// In app/static/js/app.js or inline in template
+async function createParticipant() {
+    const name = document.getElementById('newParticipantName').value.trim();
+    
+    if (!name) {
+        showToast('El nombre es obligatorio', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/workshop/${workshopId}/participant/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast(data.message, 'success');
+            // Update UI dynamically
+            addParticipantToList(data.participant);
+            updateParticipantCount(data.participant_count);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (error) {
+        showToast('Error al crear participante', 'error');
+    }
+}
+```
+
+### Common UI Patterns
+
+**1. Dynamic List Updates**
+```javascript
+function addParticipantToList(participant) {
+    const list = document.getElementById('participantsList');
+    const li = document.createElement('li');
+    li.className = 'list-group-item px-0 d-flex justify-content-between align-items-center';
+    li.dataset.participantId = participant.id;
+    li.innerHTML = `
+        <span class="participant-name">${escapeHtml(participant.name)}</span>
+        <div>
+            <button class="btn btn-sm btn-link text-muted" 
+                    onclick="editParticipant(${participant.id}, '${escapeHtml(participant.name)}')">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-link text-danger" 
+                    onclick="deleteParticipant(${participant.id})">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    list.appendChild(li);
+}
+```
+
+**2. Modal Dialogs**
+```javascript
+async function confirmDelete(message) {
+    return await showModal.confirm(message);
+}
+
+// Usage
+if (await confirmDelete('¿Está seguro de eliminar este taller?')) {
+    // Proceed with deletion
+}
+```
+
+**3. Toast Notifications**
+```javascript
+function showToast(message, type = 'info') {
+    // Implementation in app.js
+    // Types: 'success', 'error', 'warning', 'info'
+}
+```
+
+### CSS Design System
+
+**Location**: `app/static/css/custom.css`
+
+**Design Principles:**
+- Minimalist and clean
+- Brand colors for borders/shadows (not fills)
+- Subtle transitions
+- Mobile-first responsive
+
+**Key CSS Variables:**
+```css
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #64748b;
+    --bg-light: #f8fafc;
+    --border-light: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+}
+```
+
+**Component Classes:**
+- `.workshop-card` - Workshop cards with hover effects
+- `.session-card` - Expandable session cards
+- `.observation-card` - Observation interface
+- `.answer-btn` - Answer buttons with visual feedback
+
+### Key Templates
+
+**Workshop Detail** (`workshop/detail.html`)
+- Shows workshop info, participants, and sessions
+- AJAX for adding/editing/deleting participants
+- AJAX for adding/editing/deleting sessions
+- Observation buttons for each participant-session combination
+- Pending observations shown with different styling
+
+**Observation Workflow** (`observation/create.html`)
+- Step-by-step question interface
+- Progress bar
+- Answer selection buttons
+- Navigation (previous/next)
+- Freeform notes section at the end
+
+### JavaScript Utilities
+
+**Essential Functions** (in `app/static/js/app.js`):
+
+```javascript
+// XSS Prevention
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Fetch wrapper with error handling
+async function fetchJSON(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
+}
+```
+
+---
+
+## Part 2: Standalone SPA (Secondary Frontend)
 
 ## Architecture
 

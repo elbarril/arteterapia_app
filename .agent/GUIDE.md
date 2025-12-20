@@ -138,6 +138,7 @@ arteterapia_app/
 | `app/__init__.py` | Factory pattern, extensions, blueprints |
 | `app/models/observation_questions.py` | **CRITICAL**: Therapeutic question structure (~50 questions) |
 | `app/static/css/custom.css` | Minimalist design system |
+| `CHANGELOG.md` | **UPDATE REQUIRED**: Track all changes here |
 
 ## Development Standards
 
@@ -415,7 +416,8 @@ All pages extend `base.html`:
 5. Routes: Add routes to appropriate blueprint
 6. Template: Create/update templates
 7. Test: Manual testing in browser
-8. Commit: Granular commits with descriptive messages
+8. Changelog: Add entry to `CHANGELOG.md` under `[Unreleased]` section
+9. Commit: Granular commits with descriptive messages
 
 ### Modifying Observation Questions
 
