@@ -112,7 +112,7 @@ function cancelEditObjective() {
 function saveObjective() {
     const objective = document.getElementById('objectiveText').value;
 
-    fetch(`/workshop/${workshopId}/objective`, {
+    fetch(`/${workshopId}/objective`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ function saveObjective() {
             if (data.success) {
                 const displayDiv = document.getElementById('objectiveDisplay');
                 if (objective.trim()) {
-                    displayDiv.innerHTML = `<p class="mb-0">${objective}</p>`;
+                    displayDiv.innerHTML = `<p class="mb-0">${escapeHtml(objective)}</p>`;
                 } else {
                     displayDiv.innerHTML = '<p class="text-muted fst-italic mb-0">Haga clic para agregar un objetivo...</p>';
                 }
@@ -173,9 +173,9 @@ function createParticipant() {
                 listItem.className = 'list-group-item px-0 d-flex justify-content-between align-items-center';
                 listItem.setAttribute('data-participant-id', data.participant.id);
                 listItem.innerHTML = `
-                <span class="participant-name">${data.participant.name}</span>
+                <span class="participant-name">${escapeHtml(data.participant.name)}</span>
                 <div>
-                    <button class="btn btn-sm btn-link text-muted" onclick="editParticipant(${data.participant.id}, '${data.participant.name}')">
+                    <button class="btn btn-sm btn-link text-muted" onclick="editParticipant(${data.participant.id}, '${escapeHtml(data.participant.name)}')">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-sm btn-link text-danger" onclick="deleteParticipant(${data.participant.id})">
@@ -195,6 +195,9 @@ function createParticipant() {
                 // Update count
                 document.getElementById('participantCount').textContent = data.participant_count;
 
+                // Add observation button to all existing session cards
+                addParticipantToSessions(data.participant);
+
                 cancelAddParticipant();
             } else {
                 showModal.alert(data.message || 'Error al crear participante');
@@ -204,6 +207,41 @@ function createParticipant() {
             console.error('Error:', error);
             showModal.alert('Error de conexión');
         });
+}
+
+// Helper function to add participant observation buttons to all session cards
+function addParticipantToSessions(participant) {
+    // Find all session cards
+    const sessionCards = document.querySelectorAll('.session-card');
+
+    sessionCards.forEach(sessionCard => {
+        const sessionId = sessionCard.getAttribute('data-session-id');
+        const sessionBody = sessionCard.querySelector('.session-card-body');
+
+        // Find the observation buttons container
+        let buttonsContainer = sessionBody.querySelector('.d-flex.gap-2.flex-wrap');
+
+        if (buttonsContainer) {
+            // Create new observation button for this participant
+            const observationBtn = document.createElement('a');
+            observationBtn.href = `/session/${sessionId}/observe/${participant.id}`;
+            observationBtn.className = 'btn btn-sm btn-outline-primary observation-btn';
+            observationBtn.setAttribute('data-has-observation', 'false');
+            observationBtn.innerHTML = `
+                <i class="bi bi-clipboard-check"></i>
+                ${escapeHtml(participant.name)}
+            `;
+
+            buttonsContainer.appendChild(observationBtn);
+        }
+    });
+}
+
+// Helper function to escape HTML and prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 async function editParticipant(id, currentName) {
@@ -258,6 +296,9 @@ async function deleteParticipant(id) {
                 // Update count
                 document.getElementById('participantCount').textContent = data.participant_count;
 
+                // Remove observation buttons for this participant from all session cards
+                removeParticipantFromSessions(id);
+
                 // Add empty message if no more participants
                 const list = document.getElementById('participantsList');
                 if (list.children.length === 0) {
@@ -271,6 +312,26 @@ async function deleteParticipant(id) {
             console.error('Error:', error);
             showModal.alert('Error de conexión');
         });
+}
+
+// Helper function to remove participant observation buttons from all session cards
+function removeParticipantFromSessions(participantId) {
+    // Find all session cards
+    const sessionCards = document.querySelectorAll('.session-card');
+
+    sessionCards.forEach(sessionCard => {
+        const sessionBody = sessionCard.querySelector('.session-card-body');
+
+        // Find all observation buttons
+        const observationButtons = sessionBody.querySelectorAll('.observation-btn');
+
+        observationButtons.forEach(button => {
+            // Check if this button's href contains the participant ID
+            if (button.href && button.href.includes(`/observe/${participantId}`)) {
+                button.remove();
+            }
+        });
+    });
 }
 
 // ===== Session Management =====

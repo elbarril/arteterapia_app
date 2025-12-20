@@ -11,12 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CHANGELOG.md to track all project changes following Keep a Changelog format
 - Changelog management section in agent documentation (`.agent/README.md`)
 - Changelog update step in development workflows
+- Dynamic session card updates when participants are added or deleted (`app/static/js/app.js`)
+- XSS protection with HTML escaping for participant names in JavaScript
 
 ### Changed
 - Updated `.agent/GUIDE.md` to include changelog in critical files and workflows
 - Updated `.agent/REFERENCE.md` to include changelog in key files and development workflow
 - Updated `.agent/workflows/modify-models.md` to include changelog update step
 - Agent documentation now instructs to use changelog instead of creating implementation summaries
+
+### Fixed
+- Workshop objective update route path in `app/static/js/app.js` (was `/workshop/{id}/objective`, now `/{id}/objective`)
+- Session cards now dynamically update with observation buttons when new participants are added
+- Session cards now remove observation buttons when participants are deleted
 
 ## Guidelines for Updating
 
