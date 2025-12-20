@@ -66,6 +66,10 @@ const Workshops = {
 
             // Load participants
             await Participants.loadParticipants(workshopId);
+
+            // Load sessions
+            const sessions = await Sessions.getWorkshopSessions(workshopId);
+            Sessions.renderSessionsList(sessions, workshopId);
         } catch (error) {
             UI.showToast(`Error al cargar taller: ${error.message}`, 'error');
         }
