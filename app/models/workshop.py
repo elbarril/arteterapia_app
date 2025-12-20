@@ -1,5 +1,5 @@
 """Workshop model."""
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 
@@ -11,7 +11,7 @@ class Workshop(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False, index=True)
     objective = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(datetime.UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     
     # Foreign key to user (owner of the workshop)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)

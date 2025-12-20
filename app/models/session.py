@@ -1,5 +1,5 @@
 """Session model."""
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 
@@ -13,7 +13,7 @@ class Session(db.Model):
     prompt = db.Column(db.Text, nullable=False)
     motivation = db.Column(db.Text, nullable=True)
     materials = db.Column(db.JSON, nullable=True)  # Array of material names
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(datetime.UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     
     # Relationship to observational records
     observations = db.relationship(

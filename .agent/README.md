@@ -1,57 +1,132 @@
 # Agent Documentation
 
-This directory contains comprehensive documentation for AI agents working on the Arteterapia application.
+This directory contains streamlined documentation for AI agents working on the Arteterapia application.
 
-## Contents
+## Quick Start
 
-### Main Documentation
-- **[AGENT_GUIDELINES.md](AGENT_GUIDELINES.md)** - Comprehensive guide covering architecture, development standards, and best practices. **READ THIS FIRST** before starting any work.
+**New to the project?**
+1. Read [GUIDE.md](GUIDE.md) - Comprehensive development guide
+2. Bookmark [REFERENCE.md](REFERENCE.md) - Quick reference for commands and patterns
 
-### Workflows Directory
-The `workflows/` directory contains step-by-step guides for common development tasks:
+**Working on specific features?**
+- API development → [topics/api.md](topics/api.md)
+- Frontend work → [topics/frontend.md](topics/frontend.md)
+- Testing → [topics/testing.md](topics/testing.md)
 
-- **[setup-environment.md](workflows/setup-environment.md)** - Setup development environment from scratch
-- **[modify-models.md](workflows/modify-models.md)** - Add or modify database models safely
-- **[update-translations.md](workflows/update-translations.md)** - Update i18n translations
-- **[reset-database.md](workflows/reset-database.md)** - Reset database for testing (⚠️ destructive)
+**Common tasks?**
+- Setup environment → [workflows/setup-environment.md](workflows/setup-environment.md)
+- Modify models → [workflows/modify-models.md](workflows/modify-models.md)
+- Reset database → [workflows/reset-database.md](workflows/reset-database.md)
 
-## Quick Start for Agents
+## Documentation Structure
 
-1. **Read** `AGENT_GUIDELINES.md` in full
-2. **Review** the project structure section
-3. **Check** relevant workflows for the task at hand
-4. **Verify** understanding of:
-   - Authentication system
-   - Database models and relationships
-   - Frontend design principles
+### Core Documentation
+
+**[GUIDE.md](GUIDE.md)** - Comprehensive Development Guide
+- Project overview and architecture
+- Technology stack and design patterns
+- Database models and relationships
+- Authentication and security
+- Frontend guidelines
+- Common workflows
+
+**[REFERENCE.md](REFERENCE.md)** - Quick Reference
+- Technology stack summary
+- Core models and routes
+- Essential commands (setup, database, CLI)
+- Security checklist
+- Common pitfalls
+
+### Topic-Specific Documentation
+
+**[topics/api.md](topics/api.md)** - API Development
+- RESTful API endpoints reference
+- JWT authentication details
+- Error handling patterns
+- Testing and examples
+
+**[topics/frontend.md](topics/frontend.md)** - Frontend Development
+- Vanilla JS SPA architecture
+- Component patterns
+- Security and performance
+- Deployment options
+
+**[topics/testing.md](topics/testing.md)** - Testing Guide
+- pytest configuration and fixtures
+- Test organization and patterns
+- Performance optimization
+- Coverage and CI/CD
+
+### Workflows
+
+**[workflows/setup-environment.md](workflows/setup-environment.md)**
+- Complete environment setup from scratch
+- Installing dependencies and initializing database
+
+**[workflows/modify-models.md](workflows/modify-models.md)**
+- Safe database model modification
+- Creating and applying migrations
+
+**[workflows/reset-database.md](workflows/reset-database.md)**
+- Database reset procedure (destructive)
+- Sample data creation
 
 ## Using Workflows
 
-Workflows are referenced with slash commands:
-- `/setup-environment` - Setup workflow
-- `/modify-models` - Model modification workflow
-- `/reset-database` - Database reset workflow
+Workflows can be referenced with slash commands:
+- `/setup-environment`
+- `/modify-models`
+- `/reset-database`
 
-Some workflows include `// turbo` annotations, which indicate that steps can be auto-run without user approval (when safe).
+Some workflows include `// turbo` annotations indicating steps safe to auto-run.
 
-## Purpose
+## Documentation Reading Strategy
 
-This documentation ensures that:
-- Agents have complete context about the project
-- Development follows established patterns and standards
-- Common tasks have documented, repeatable procedures
-- New agents can onboard quickly and effectively
-- Code quality and consistency are maintained
+**For agents starting a conversation:**
+1. Always read GUIDE.md (sections 1-4 minimum)
+2. Always read REFERENCE.md (quick scan)
+3. Read topic-specific docs based on request type:
+   - Backend/API work → topics/api.md
+   - Frontend/UI work → topics/frontend.md
+   - Test-related work → topics/testing.md
+
+**For specific tasks:**
+- Database changes → workflows/modify-models.md
+- Environment issues → workflows/setup-environment.md
+- Testing data → workflows/reset-database.md
 
 ## Maintenance
 
-Keep documentation updated when:
-- Architecture changes significantly
-- New workflows are established
-- Development standards evolve
-- Critical bugs or edge cases are discovered
+**When to update documentation:**
+- Major architectural changes
+- New models or significant schema changes
+- New features or technologies
+- Security mechanism updates
+- Workflow process changes
+
+**How to update:**
+1. Edit relevant file
+2. Update date if applicable
+3. Ensure cross-references accurate
+4. Commit with: `docs: Update [file] - [description]`
+
+## Documentation Standards
+
+**Writing Style:**
+- Concise and scannable
+- No excessive visual decorations
+- Use tables for comparisons
+- Code blocks for examples only
+- Focus on how-to, not philosophy
+
+**Structure:**
+- Clear headers for navigation
+- Short lines (max 100 chars when possible)
+- Bullet lists for quick scanning
+- Consistent formatting across files
 
 ---
 
-**Last Updated:** December 2025  
-**Project:** Arteterapia - Art Therapy Workshop Management Application
+**Version**: 2.0
+**Last Updated**: December 2025
+**Project**: Arteterapia - Art Therapy Workshop Management

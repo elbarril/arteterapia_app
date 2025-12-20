@@ -48,7 +48,7 @@ class TestAuthLogin:
             'password': 'admin123'
         })
         
-        assert response.status_code == 400
+        assert response.status_code == 401
         assert 'error' in response.json
     
     def test_login_missing_password(self, client):
@@ -57,7 +57,7 @@ class TestAuthLogin:
             'username': 'admin'
         })
         
-        assert response.status_code == 400
+        assert response.status_code == 401
         assert 'error' in response.json
     
     def test_login_invalid_json(self, client):

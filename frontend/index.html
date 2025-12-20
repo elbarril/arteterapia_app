@@ -122,6 +122,59 @@
             </div>
         </div>
 
+        <!-- Observation Workflow Page -->
+        <div class="page" id="observationPage" style="display: none;">
+            <div class="page-header">
+                <button class="btn btn-outline" id="cancelObservationBtn">
+                    ← Cancelar
+                </button>
+                <h2 id="observationTitle">Nueva Observación</h2>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="observationProgress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="observationProgressText">
+                    Pregunta 1 de 50
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="observation-card">
+                <div class="observation-category" id="observationCategory">
+                    Categoría
+                </div>
+                <div class="observation-question" id="observationQuestion">
+                    Pregunta
+                </div>
+                <div class="observation-answers" id="observationAnswers">
+                    <!-- Answer buttons will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="observation-nav">
+                <button class="btn btn-outline" id="prevQuestionBtn" disabled>
+                    ← Anterior
+                </button>
+                <button class="btn btn-primary" id="nextQuestionBtn" disabled>
+                    Siguiente →
+                </button>
+                <button class="btn btn-primary" id="finishObservationBtn" style="display: none;">
+                    Finalizar Observación
+                </button>
+            </div>
+
+            <!-- Notes Section (shown at the end) -->
+            <div class="observation-notes" id="observationNotesSection" style="display: none;">
+                <h3>Notas Adicionales (Opcional)</h3>
+                <textarea id="observationNotes" class="form-textarea"
+                    placeholder="Agrega notas adicionales sobre esta observación..." rows="5"></textarea>
+            </div>
+        </div>
+
         <!-- Profile Page -->
         <div class="page" id="profilePage" style="display: none;">
             <div class="page-header">
@@ -151,6 +204,8 @@
     <script src="js/ui.js"></script>
     <script src="js/workshops.js"></script>
     <script src="js/participants.js"></script>
+    <script src="js/sessions.js"></script>
+    <script src="js/observations.js"></script>
     <script src="js/app.js"></script>
 </body>
 

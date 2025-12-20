@@ -163,6 +163,51 @@ python setup_db.py --reset
 
 ⚠️ **Important:** Stop the Flask application (`Ctrl+C`) before running `--reset` commands!
 
+## Flask CLI Commands
+
+The application includes comprehensive Flask CLI commands for common administrative tasks. These commands provide a powerful alternative to the `setup_db.py` script with more granular control.
+
+### Quick Examples
+
+```bash
+# Database management
+.\.venv\Scripts\python.exe -m flask --app run database stats
+.\.venv\Scripts\python.exe -m flask --app run database init --with-data
+
+# User management
+.\.venv\Scripts\python.exe -m flask --app run users list
+.\.venv\Scripts\python.exe -m flask --app run users create
+.\.venv\Scripts\python.exe -m flask --app run users change-password admin
+
+# Invitations
+.\.venv\Scripts\python.exe -m flask --app run invitations create --email user@example.com
+
+# Admin utilities
+.\.venv\Scripts\python.exe -m flask --app run admin check-config
+.\.venv\Scripts\python.exe -m flask --app run admin generate-secret-key
+```
+
+### Available Command Groups
+
+- **`database`** - Database initialization, reset, and statistics
+- **`users`** - User creation, management, role assignment
+- **`invitations`** - Create and manage user invitations
+- **`data`** - Sample data creation and cleanup
+- **`admin`** - Administrative utilities and configuration checks
+
+### Documentation
+
+For complete CLI documentation, see:
+- **[CLI_COMMANDS.md](.agent/CLI_COMMANDS.md)** - Comprehensive reference with all commands and options
+- **[CLI_QUICK_REFERENCE.md](.agent/CLI_QUICK_REFERENCE.md)** - Quick reference card for common commands
+
+**Get help for any command:**
+```bash
+.\.venv\Scripts\python.exe -m flask --app run --help
+.\.venv\Scripts\python.exe -m flask --app run database --help
+.\.venv\Scripts\python.exe -m flask --app run users create --help
+```
+
 ## Environment Configuration
 
 ### Setting Up Environment Variables

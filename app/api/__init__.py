@@ -8,8 +8,12 @@ api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 from app.api.auth import auth_api_bp
 from app.api.workshops import workshops_api_bp
 from app.api.participants import participants_api_bp
+from app.api.sessions import sessions_api_bp
+from app.api.observations import observations_api_bp
 
 # Register sub-blueprints
 api_bp.register_blueprint(auth_api_bp)
 api_bp.register_blueprint(workshops_api_bp)
 api_bp.register_blueprint(participants_api_bp)
+api_bp.register_blueprint(sessions_api_bp)
+api_bp.register_blueprint(observations_api_bp)

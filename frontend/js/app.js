@@ -83,11 +83,13 @@ function setupEventListeners() {
         });
     }
 
-    // Add session button (placeholder)
+    // Add session button
     const addSessionBtn = document.getElementById('addSessionBtn');
     if (addSessionBtn) {
         addSessionBtn.addEventListener('click', () => {
-            UI.showToast('Funcionalidad de sesiones próximamente', 'info');
+            if (Workshops.currentWorkshop) {
+                Sessions.showCreateModal(Workshops.currentWorkshop.id);
+            }
         });
     }
 }
